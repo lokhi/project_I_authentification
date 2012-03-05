@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>login page</title>
+	</head>
+	<body>
+		<h1>New user</h1>
+		<form action="/user" method="post">
+			<div class="field">
+				<label for="user_login">Login</label><br />
+				<input id="user_login" name="login" size="30" type="text" />
+			</div>
+			<div class="field">
+				<label for="user_password">Password</label><br />
+				<input id="user_password" name="password" size="30" type="password" />
+			</div>
+			<div class="actions">
+				<input name="commit" type="submit" value="Create user" />
+			</div>
+		</form>
+	</body>
+</html>
+
