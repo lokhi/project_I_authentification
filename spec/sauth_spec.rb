@@ -12,6 +12,20 @@ describe "accessing to the site without being connected" do
   end
 end
 
+describe "registration" do
+  it "should be possible to register an user" do
+    get '/register'
+    last_response.should be_ok
+  end
+  
+  it "should get the data post by the user" do
+    post '/register', "login"=>"toto","password"=>"1234"
+    last_response.should be_ok
+  end
+    
+    
+end
+
 
 
 
