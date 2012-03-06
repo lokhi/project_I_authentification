@@ -36,9 +36,9 @@ describe User do
   end
 
   
-  #context "the password" do
-   #  it "should include the password module" do
-    #   User.included_modules.should include(Password)
-    #end
-  #end
+  context "Encryption of the password" do
+    it "should include the password module" do
+      User.included_modules.should include(Password)
+    end
+  end
 end
