@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>login page</title>
+</head>
+<body>
+
+<h1>Welcome to the authentification service</h1>
+<p>To continue thanks to log you if you are not register you can do it <a href="">here</a></p>
+
+<form action="/sauth" method="post">
+  <div class="field">
+    <label for="sauth_login">Login</label><br />
+
+    <input id="sauth_login" name="login" size="30" type="text" />
+  </div>
+  <div class="field">
+    <label for="sauth_password">Password</label><br />
+    <input id="sauth_password" name="password" size="30" type="password" />
+  </div>
+  <div class="actions">
+    <input name="commit" type="submit" value="Connect" />
+
+  </div>
+</form>
+
+</body>
+</html>
+
