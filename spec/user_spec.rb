@@ -36,9 +36,18 @@ describe User do
   end
 
   
-  context "Encryption of the password" do
-    it "should include the password module" do
-      User.included_modules.should include(Password)
-    end
-  end
+  #context "Encryption of the password" do
+   # it "should include the password module" do
+    #  User.included_modules.should include(Password)
+    #end
+    
+    #it "should save the encrypt password in the database" do
+     # u = User.new
+     # u.login="test"
+     # u.password="foo"
+     # u.save
+     # k=User.find_by_login("test")
+     # k.password.should == "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
+    #end
+  #end
 end

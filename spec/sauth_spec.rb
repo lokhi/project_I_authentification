@@ -18,10 +18,33 @@ describe "registration" do
     last_response.should be_ok
   end
   
-  it "should get the data post by the user" do
-    post '/register', "login"=>"toto","password"=>"1234"
-    last_response.should be_ok
+  context "login and password are valid" do
+    it "should redirect to the login page" do
+      post '/user/new', params={:login=>"totttta",:password=>"1234"}
+      follow_redirect!
+      last_request.path.should == '/login'
+    end
   end
+  
+   context "login and password are invalid" do
+     it "should redirect to the register page" do
+       post '/user/new', params={:login=>"",:password=>"1234"}
+      follow_redirect!
+      last_request.path.should == '/register'
+     end
+     
+     it "should return an error message" do
+        post '/user/new', params={:login=>"",:password=>"1234"}
+        follow_redirect!
+        last_request.GET.should ==  {"r"=>"error"}
+     end
+     
+     it "should print to the register page a error message" do
+       post '/user/new', params={:login=>"",:password=>"1234"}
+       follow_redirect!
+       last_response.body.should have_content('login or password invalid')
+     end
+   end
     
     
 end
