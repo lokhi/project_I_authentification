@@ -20,7 +20,7 @@ describe "registration" do
   
   context "login and password are valid" do
     it "should redirect to the login page" do
-      post '/user/new', params={:login=>"totttta",:password=>"1234"}
+      post '/user/new', params={:login=>"tooiehnffta",:password=>"1234"}
       follow_redirect!
       last_request.path.should == '/login'
     end
@@ -42,7 +42,7 @@ describe "registration" do
      it "should print to the register page a error message" do
        post '/user/new', params={:login=>"",:password=>"1234"}
        follow_redirect!
-       last_response.body.should have_content('login or password invalid')
+       last_response.body.should include('login or password invalid')
      end
    end
     

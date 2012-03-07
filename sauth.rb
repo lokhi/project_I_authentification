@@ -1,5 +1,5 @@
  require 'sinatra'
-require_relative 'lib/user'
+#require_relative 'lib/user'
 
 get '/' do
   redirect "/login"
@@ -10,7 +10,11 @@ get '/login' do
 end
 
 get '/register' do
-  erb :"register"
+  if params["r"] == "error"
+    erb :"register", :locals => {:notice=>"login or password invalid"}
+  else
+    erb :"register", :locals => {:notice=>""}
+  end
 end
 
 post '/user/new' do
