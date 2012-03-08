@@ -6,12 +6,6 @@ class User < ActiveRecord::Base
   validates :login, :uniqueness => true
   
   def password=(clear_pass)
-    write_attribute(:password,User.encrypt(clear_pass))
+    write_attribute(:password, Digest::SHA1.hexdigest(clear_pass))
   end
-  
-  def self.encrypt(clear_text)
-    Digest::SHA1.hexdigest(clear_text)
-  end
-  
-  
 end
