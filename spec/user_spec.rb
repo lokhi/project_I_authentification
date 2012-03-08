@@ -22,32 +22,35 @@ describe User do
   end
   
    context "duplicate login" do
+  after(:each) do
+     u = User.find_by_login("totopourrspec")
+     u.destroy
+   end
     it "should not be valid with a login who already exists" do
     u = User.new
-    u.login = "toto"
+    u.login = "totopourrspec"
     u.password ="123"
     u.save
-    
     k=User.new
-    k.login ="toto"
+    k.login ="totopourrspec"
     k.password="123"
     k.valid?.should == false
     end
   end
 
   
-  #context "Encryption of the password" do
-   # it "should include the password module" do
-    #  User.included_modules.should include(Password)
-    #end
-    
-    #it "should save the encrypt password in the database" do
-     # u = User.new
-     # u.login="test"
-     # u.password="foo"
-     # u.save
-     # k=User.find_by_login("test")
-     # k.password.should == "0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33"
-    #end
-  #end
+  context "Encryption of the password" do
+  after(:each) do
+     u = User.find_by_login("testpourrspec")
+     u.destroy
+   end
+    it "should save the encrypt password in the database" do
+      u = User.new
+      u.login="testpourrspec"
+      u.password="foo"
+      u.save
+      k=User.find_by_login("testpourrspec")
+      k.password.should == '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33'
+    end
+  end
 end
