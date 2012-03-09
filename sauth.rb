@@ -10,6 +10,15 @@ get '/login' do
    erb :"login"
 end
 
+post '/session' do
+  if User.authenticate(params["user"])
+    login=params["user"]["login"]
+    response.set_cookie("user_login",login)
+    session[:login]=login
+    "Bonjour #{session[:login]}"
+  end
+end
+
 get '/user/new' do
   erb :"register"
 end

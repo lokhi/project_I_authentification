@@ -49,6 +49,39 @@ describe "registration" do
   end
 end
 
+describe "authentification with the login form" do
+
+  it "should use the user authentification" do
+    params={"user" => {"login"=>"toto", "password" => "1234"}}
+    User.stub(:authenticate){true}
+    User.should_receive(:authenticate).with(params["user"])
+    post '/session', params
+  end
+  
+  context "with a valid user" do
+    it "should create a cookie" do
+      User.stub(:authenticate){true}
+      post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      last_response.headers["Set-Cookie"].should == "user_login=toto"
+    end
+    
+   # it "should store the user in a session" do
+    #  User.stub(:authenticate){true}
+     # post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}, {}
+      #savoir si il a crée la session
+    #end
+    
+    it "should print the index" do
+      User.stub(:authenticate){true}
+      post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      last_response.body.should == "Bonjour toto"
+    end
+  
+  end
+
+
+end
+
 
 
 
