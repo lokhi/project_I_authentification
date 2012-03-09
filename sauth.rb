@@ -2,17 +2,25 @@ require 'sinatra'
 
 require_relative 'lib/user'
 
+enable :sessions
 
-def generate_cookie 
-  require 'securerandom'
-  SecureRandom.urlsafe_base64(20)
+
+helpers do 
+  def current_user
+    session["current_user"]
+  end
+
+  def disconnect
+    session["current_user"] = nil
+  end
 end
 
-
-
-
 get '/' do
-  redirect "/login"
+  if current_user
+   "Bonjour #{current_user}"
+  else
+    redirect "/login"
+  end
 end
 
 get '/login' do
@@ -22,13 +30,10 @@ end
 post '/session' do
   if User.authenticate(params["user"])
     login=params["user"]["login"]
-    val_cookie=generate_cookie
-    session[:session_id][val_cookie]=login
-    response.set_cookie("id_session",val_cookie)
-    "Bonjour #{session[:session_id]}"
+    session[:current_user]=login
+    "Bonjour #{session[:current_user]}"
+    redirect "/"
   end
-  
-  
 end
 
 get '/user/new' do

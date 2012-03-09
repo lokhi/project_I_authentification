@@ -62,15 +62,25 @@ describe "authentification with the login form" do
     it "should create a cookie" do
       User.stub(:authenticate){true}
       post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
-      last_response.headers["Set-Cookie"].should include("id_session")
+      last_response.headers["Set-Cookie"].should be_true
     end
     
     
-    it "should print the index" do
+    it "should redirect the user to /" do
       User.stub(:authenticate){true}
       post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      follow_redirect!
+      last_request.path.should == '/'
       last_response.body.should include("Bonjour toto")
     end
+    
+    it "should register the user into the current user_session" do
+      User.stub(:authenticate){true}
+      post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      follow_redirect!
+      last_request.env["rack.session"]["current_user"].should == "toto"
+    end
+    
   end
 
 end
