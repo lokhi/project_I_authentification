@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   validates :password, :presence => true
   validates :login, :uniqueness => true
   
-  def password=(clear_pass)
-    write_attribute(:password, Digest::SHA1.hexdigest(clear_pass))
-  end
+  #def password=(clear_pass)
+   # write_attribute(:password, Digest::SHA1.hexdigest(clear_pass))
+  #end
 end

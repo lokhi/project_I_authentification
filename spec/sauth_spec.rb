@@ -5,7 +5,7 @@ def app
 end
 
 describe "accessing to the site without being connected" do
-  it "should redirect the user to sauth/login" do
+  it "should redirect the user to /login" do
     get '/'
     follow_redirect!
     last_request.path.should == '/login'
@@ -13,42 +13,40 @@ describe "accessing to the site without being connected" do
 end
 
 describe "registration" do
+  before(:each) do
+   @params={"user" => {"login"=>"testrspec", "password"=>"1234"}}
+   @user = double("user")
+   User.stub(:new){@user}
+  end
+
   it "should be possible to register an user" do
     get '/user/new'
     last_response.should be_ok
+    last_response.body.should include("<title>Registration page</title>")
   end
- 
-  context "login and password are valid" do
-   after(:each) do
-     u = User.find_by_login("testrspec")
-     u.destroy
-   end
+  
+  context "all params are valid" do
+    it "should create an user" do
+      User.should_receive(:new).with(@params["user"]).and_return(@user)
+      post '/user', @params
+    end
+    
     it "should redirect to the login page" do
-      post '/user', params={:login=>"testrspec",:password=>"1234"}
+      @user.stub(:save){true}
+      post '/user', @params
       follow_redirect!
       last_request.path.should == '/login'
     end
   end
   
-   context "login and password are invalid" do
-     it "should redirect to the register page" do
-       post '/user', params={:login=>"",:password=>"1234"}
-      follow_redirect!
-      last_request.path.should == '/user/new'
-     end
-     
-     it "should return an error message" do
-        post '/user', params={:login=>"",:password=>"1234"}
-        follow_redirect!
-        last_request.GET.should ==  {"r"=>"error"}
-     end
-     
-     it "should print to the register page a error message" do
-       post '/user', params={:login=>"",:password=>"1234"}
-       follow_redirect!
-       last_response.body.should include('login or password invalid')
-     end
-   end
+  context "with invalid parameters" do
+    it "should print the register page" do
+      @user.stub(:save){false}
+      post '/user', @params
+      last_response.should be_ok
+      last_response.body.should include("<title>Registration page</title>")
+    end
+  end
 end
 
 
