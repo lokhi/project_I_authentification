@@ -1,6 +1,8 @@
 require 'sinatra'
 
-require_relative 'lib/user'
+#require_relative 'lib/user'
+
+require_relative 'lib/application'
 
 enable :sessions
 
@@ -31,9 +33,9 @@ post '/session' do
   if User.authenticate(params["user"])
     login=params["user"]["login"]
     session[:current_user]=login
-    "Bonjour #{session[:current_user]}"
     redirect "/"
   end
+  erb :"login"
 end
 
 get '/user/new' do
@@ -47,4 +49,18 @@ post '/user' do
  else
    erb :"register"
  end
+end
+
+
+get '/appli/new' do
+  "<title>Application register</title>"
+end
+
+post '/appli' do
+  a = Application.new(params["appli"])
+  if  a.save
+  redirect "/appli/#{params["appli"]["name"]}"
+  else
+    "<title>Application register</title>"
+  end
 end
