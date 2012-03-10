@@ -101,6 +101,11 @@ end
 
 describe "addition of an application by an user" do
   context "the user is connected" do
+  before(:each) do
+    @params={"appli" => {"name"=>"appli1", "adresse"=>"http://appli1.com"}}
+    @appli = double ("appli")
+    Application.stub(:new){@appli}
+  end
     
     it "should return the form to the application registeration" do
       get '/appli/new'
@@ -109,49 +114,35 @@ describe "addition of an application by an user" do
     end
     
     context "params are valid" do
+    before(:each) do
+      @appli.stub(:save){true}
+    end
     it "should create an application" do
-      params={"appli" => {"name"=>"appli1", "adresse"=>"http://appli1.com"}}
-      Application.should_receive(:new).with(params["appli"])
-      post '/appli', params
+      Application.should_receive(:new).with(@params["appli"])
+      post '/appli', @params
     end
     
      it "should save the application" do
-      params={"appli" => {"name"=>"appli1", "adresse"=>"http://appli1.com"}}
-      appli = double ("appli")
-      Application.stub(:new){appli}
-      appli.stub(:save){true}
-      appli.should_receive(:save)
-      post '/appli', params
+      @appli.should_receive(:save)
+      post '/appli', @params
     end
     
     it "should redirect the user to the application page" do
-      params={"appli" => {"name"=>"appli1", "adresse"=>"http://appli1.com"}}
-      appli = double ("appli")
-      Application.stub(:new){appli}
-      appli.should_receive(:save){true}
-      post '/appli', params
+      post '/appli', @params
       follow_redirect!
       last_request.path.should == "/appli/appli1"
     end
-    end
+  end
     context "invalid params" do
       it "should return the application registration form" do
-        params={"appli" => {"name"=>"apppli1", "adresse"=>"http://appli1.com"}}
-        appli = double ("appli")
-        Application.stub(:new){appli}
-        appli.should_receive(:save){false}
-        post '/appli', params
+        @appli.stub(:save){false}
+        post '/appli', @params
         last_response.should be_ok
         last_response.body.should include("<title>Application register</title>")
-      
       end
     end
   end
 end
-
-
-
-
 
 
 
