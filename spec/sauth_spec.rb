@@ -50,37 +50,46 @@ describe "registration" do
 end
 
 describe "authentification with the login form" do
+   before(:each) do
+     @params={"user" => {"login"=>"toto", "password"=>"1234"}}
+   end
 
   it "should use the user authentification" do
-    params={"user" => {"login"=>"toto", "password" => "1234"}}
-    User.stub(:authenticate){true}
-    User.should_receive(:authenticate).with(params["user"])
-    post '/session', params
+    User.should_receive(:authenticate).with(@params["user"])
+    post '/session', @params
   end
   
   context "with a valid user" do
+   before(:each) do
+     User.stub(:authenticate){true}
+   end
     it "should create a cookie" do
-      User.stub(:authenticate){true}
-      post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      
+      post '/session', @params
       last_response.headers["Set-Cookie"].should be_true
     end
     
     
     it "should redirect the user to /" do
-      User.stub(:authenticate){true}
-      post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      post '/session', @params
       follow_redirect!
       last_request.path.should == '/'
       last_response.body.should include("Bonjour toto")
     end
     
     it "should register the user into the current user_session" do
-      User.stub(:authenticate){true}
-      post '/session', {"user" => {"login"=>"toto", "password" => "1234"}}
+      post '/session', @params
       follow_redirect!
       last_request.env["rack.session"]["current_user"].should == "toto"
     end
-    
+  end
+  
+  context "with an invalid user" do
+    it "should return the auth form" do
+      User.stub(:authenticate){false}
+      post '/session', @params
+      last_response.body.should include("<title>login page</title>")
+    end
   end
 
 end
