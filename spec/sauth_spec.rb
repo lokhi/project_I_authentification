@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../sauth'
 
 def app
   Sinatra::Application
@@ -99,7 +100,7 @@ describe "authentification with the login form" do
 end
 
 
-describe "addition of an application by an user" do
+describe "registration of an application by an user" do
   context "the user is connected" do
   before(:each) do
     @params={"appli" => {"name"=>"appli1", "adresse"=>"http://appli1.com"}}
@@ -131,6 +132,7 @@ describe "addition of an application by an user" do
       post '/appli', @params
       follow_redirect!
       last_request.path.should == "/appli/appli1"
+      last_response.body.should include("application appli1")
     end
   end
     context "invalid params" do
@@ -144,5 +146,42 @@ describe "addition of an application by an user" do
   end
 end
 
+describe "authentification of an user call by an application" do
+  context "the user is not connect to the sauth" do
+    it "should return the login form" do
+    	get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"}
+    	last_response.body.should include("appli1 login page")
+    end
+    
+    context "params are valid" do
+      before(:each)do
+        User.stub(:authenticate){true}
+      end
+    
+      it "should use the user authentification" do
+        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        User.should_receive(:authenticate).with(params["user"])
+        post '/appli1/session', params
+      end
+      
+      it "should register the user into the current user_session" do
+        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        last_request.env["rack.session"]["current_user"].should == "toto"
+      end
+      
+      
+      #it "should redirect to the origin application" do
+      #  post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+      #  follow_redirect!
+      #  last_request.should be_ok
+      #end
+      #it "should record that user use this application" do
+        
+      #end
+    end
+    
+   
+  end
+end
 
 

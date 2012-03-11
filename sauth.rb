@@ -1,6 +1,6 @@
 require 'sinatra'
 
-#require_relative 'lib/user'
+require_relative 'lib/user'
 
 require_relative 'lib/application'
 
@@ -19,7 +19,7 @@ end
 
 get '/' do
   if current_user
-   "Bonjour #{current_user}"
+   "Bonjour #{current_user} <a href='appli/new'> ajouter app</a>"
   else
     redirect "/login"
   end
@@ -62,5 +62,23 @@ post '/appli' do
   redirect "/appli/#{params["appli"]["name"]}"
   else
     "<title>Application register</title>"
+  end
+end
+
+
+get '/appli/:appli' do
+  "Application #{appli}"
+end
+
+
+get '/:appli/session/new' do
+  "#{appli} login page"
+end
+
+post '/:appli/session' do
+ if User.authenticate(params["user"])
+    login=params["user"]["login"]
+    session[:current_user]=login
+    #redirect Application.find_by_name(appli).adresse+params["origin"] 
   end
 end
