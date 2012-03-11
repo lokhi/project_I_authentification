@@ -28,7 +28,14 @@ end
 
 
 get '/protected' do
-  secret=generate_secret
-  session["secret"]={secret=> Time.now.to_i}
-  redirect "http://sauth/appli1/session/new?origin=/protected&secret=#{secret}"
+  if params["login"].nil? and params["secret"].nil?
+    secret=generate_secret
+    session["secret"]={secret=> Time.now.to_i}
+    redirect "http://sauth/appli1/session/new?origin=/protected&secret=#{secret}"
+  else
+    
+  #  if Time.now.to_i - session["secret"][params["secret"]].to_i < 5
+     session["current_user"]=params["login"]
+    #end
+  end
 end

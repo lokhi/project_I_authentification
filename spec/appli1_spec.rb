@@ -26,10 +26,26 @@ describe "protected area" do
       last_request.params['secret'].nil?.should be_false
     end
     
-    it "should receive the login of the user from sauth" do
-      get '/protected', {"secret"=>"12345"}
+    context "receiving the sauth response" do
+    
+      context "secret is not expired" do
+         it "should receive the login of the user from sauth and create his session" do
+           get '/protected', {"login"=>"toto","secret"=>"foo"},"rack.session" =>{:secret => {"foo" => "123441"}}
+           last_request.env["rack.session"]["current_user"].should == "toto"
+         end 
+      end
+      
+      context "secret is expired" do
+       # it "should redirect the user to the home" do
+       #    get '/protected', {"login"=>"toto","secret"=>"foo"},"rack.session" =>{:secret => {"foo" => "0"}}
+       #    follow_redirect!
+       #    last_request.path.should "/"
+       # end
+      end
+    
+   
     
     end
-   
+    
   end
 end
