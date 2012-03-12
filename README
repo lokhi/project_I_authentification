@@ -1,0 +1,7 @@
+Secret en les applications:
+Le developeur donne la publique clé pendant lenregistrement de l'application
+
+pour le login l application retourne le login crypte avec la clé publique et crypte en base64_urlsafe pour ne pas avoir de souci avec la var dans l'url
+
+l'appli decrypt le base64 puis decrypt le login grace a la clé privé
+
