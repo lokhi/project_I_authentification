@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'active_record'
 require 'securerandom'
+require 'openssl'
 require_relative 'database'
 require_relative 'lib/user'
 
@@ -41,7 +42,7 @@ get '/session/new' do
 end
 
 post '/session' do
- # if User.authenticate(params["user"])
+  if User.authenticate(params["user"])
     login=params["user"]["login"]
     session[:current_user]=login
     cookie=generate_cookie
@@ -53,9 +54,9 @@ post '/session' do
       redirect "/"
     end
     
-  #else
-   # erb :"login"
-  #end
+  else
+    erb :"login"
+  end
 end
 
 get '/user/new' do
@@ -116,10 +117,10 @@ get '/admin/applications' do
   "List of applications"
 end
 
-#get 'admin/users/:user/destroy' do
-#  u = User.find_by_login(user)
-#  u.destroy
-#end
+get 'admin/users/:user/destroy' do
+  u = User.find_by_login(user)
+  u.destroy
+end
 
 #get 'admin/appli/:appli/destroy' do
  # a = Application.find_by_name(appli)

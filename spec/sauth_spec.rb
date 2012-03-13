@@ -6,10 +6,10 @@ def app
 end
 
 describe "accessing to the site without being connected" do
-  it "should redirect the user to /login" do
+  it "should redirect the user to /session/new" do
     get '/'
     follow_redirect!
-    last_request.path.should == '/login'
+    last_request.path.should == '/session/new'
   end
 end
 
@@ -159,13 +159,13 @@ describe "authentification of an user call by an application" do
       end
     
       it "should use the user authentification" do
-        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected"}
         User.should_receive(:authenticate).with(params["user"])
         post '/appli1/session', params
       end
       
       it "should register the user into the current user_session" do
-        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected"}
         last_request.env["rack.session"]["current_user"].should == "toto"
       end
       
@@ -184,4 +184,42 @@ describe "authentification of an user call by an application" do
   end
 end
 
+describe "the admin part" do
+  it "should be accessible only with the admin login" do
+    User.stub(:authenticate){true}
+    post '/session', {"user"=>{"login"=>"admin","password"=>"1234"}}
+    follow_redirect!
+    last_response.body.should include("Administration")
+  end
+  
+  context "connect as admin" do
+    it "should list all users of the sauth" do
+      get '/admin/users'
+      last_response.body.should include("List of users")
+    end
+    
+    it "should delete an user" do
+      u=double("user")
+      User.stub(:find_by_login){u}
+      u.stub(:destroy)
+      User.should_receive(:find_by_login).with("toto")
+      u.should_receive(:destroy)
+      get '/admin/users/toto/destroy'
+    end 
+    
+    it "should list all application who uses the sauth" do
+      get '/admin/applications'
+      last_response.body.should include("List of applications")
+    end
+    
+    #it "should delete an application" do
+     # a=double("appli")
+     # Application.stub(:find_by_name){a}
+     # a.stub(:destroy)
+     # Application.should_receive(:find_by_name).with("appli")
+     # a.should_receive(:destroy)
+     # get '/admin/appli/appli1/destroy'
+    #end 
+  end
+end
 
