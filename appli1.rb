@@ -1,15 +1,6 @@
 require 'sinatra'
 require 'securerandom'
 
-
-enable :sessions
-
-
-
-def generate_secret 
-  SecureRandom.urlsafe_base64
-end
-
 helpers do 
   def current_user
     session["current_user"]
@@ -20,6 +11,9 @@ helpers do
   end
 end
 
+def generate_secret
+  SecureRandom.urlsafe_base64
+end
 
 get '/' do
  "Application"
@@ -28,14 +22,15 @@ end
 
 
 get '/protected' do
-  if params["login"].nil? and params["secret"].nil?
-    secret=generate_secret
-    session["secret"]={secret=> Time.now.to_i}
+  if params["login"].nil? #&& params["secret"].nil?
+    secret =generate_secret
+    session[secret]=Time.now.to_i
     redirect "http://sauth/appli1/session/new?origin=/protected&secret=#{secret}"
   else
-    
-  #  if Time.now.to_i - session["secret"][params["secret"]].to_i < 5
-     session["current_user"]=params["login"]
-    #end
+    #if session[params["secret"]] && (Time.now.to_i - session[params["secret"]] < 60)
+     clogin=Base64.urlsafe_decode64(params["login"])
+     privkey=File.read('private.pem')
+     login=privkey.private_decrypt(privkey)
+
   end
 end
