@@ -19,7 +19,7 @@ end
 helpers do 
   def current_user
     cookie = request.cookies["sauthCookie"]
-    if !cookie.nil?
+    if !cookie.nil? && session["current_user"].nil?
       session["current_user"]=settings.cookie_manager[cookie]
     end
     session["current_user"]
@@ -32,7 +32,7 @@ end
 
 get '/' do
   if current_user # A faire avec le before
-   "Bonjour #{current_user}"
+   "Hello #{current_user}"
   else
     redirect "/session/new"
   end

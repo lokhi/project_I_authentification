@@ -11,7 +11,14 @@ describe "accessing to the site without being connected" do
     follow_redirect!
     last_request.path.should == '/session/new'
   end
+  it "should print the home page of the user" do
+   get '/',{},"rack.session" => { :current_user => "toto" }
+   last_response.body.should include("Hello toto")
+  end
+  
 end
+
+
 
 describe "registration" do
   before(:each) do
@@ -81,7 +88,7 @@ describe "authentification with the login form" do
       post '/session', @params
       follow_redirect!
       last_request.path.should == '/'
-      last_response.body.should include("Bonjour toto")
+      last_response.body.should include("Hello toto")
     end
     
     it "should register the user into the current user_session" do
