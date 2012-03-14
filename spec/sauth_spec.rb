@@ -64,6 +64,7 @@ describe "authentification with the login form" do
     User.should_receive(:authenticate).with(@params["user"])
     post '/session', @params
   end
+ 
   
   context "with a valid user" do
    before(:each) do
@@ -155,7 +156,14 @@ describe "authentification of an user call by an application" do
     
     context "params are valid" do
       before(:each)do
+        app = double(Application)
+        key = double("key")
         User.stub(:authenticate){true}
+        Application.stub(:find_by_name){app}
+        app.stub(:key){"123"}
+        OpenSSL::PKey::RSA.stub(:new){key}
+        key.stub(:public_encrypt){"toto"}
+        app.stub(:adresse){"http://appli"}
       end
     
       it "should use the user authentification" do
@@ -176,10 +184,16 @@ describe "authentification of an user call by an application" do
       end
       
       
+      it "should encrypt the login with the public key of the application" do
+        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        OpenSSL::PKey::RSA.should_receive(:new)
+        post '/appli1/session', params
+      end
+      
       #it "should redirect to the origin application" do
-      #  post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-      #  follow_redirect!
-      #  last_request.should be_ok
+        #post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        #follow_redirect!
+        #last_request.path.should include("http://appli/protected")
       #end
       #it "should record that user use this application" do
         
@@ -191,6 +205,7 @@ describe "authentification of an user call by an application" do
 end
 
 describe "the admin part" do
+
   it "should be accessible only with the admin login" do
     User.stub(:authenticate){true}
     post '/session', {"user"=>{"login"=>"admin","password"=>"1234"}}

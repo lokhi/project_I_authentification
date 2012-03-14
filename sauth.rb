@@ -2,6 +2,7 @@ require 'sinatra'
 require 'active_record'
 require 'securerandom'
 require 'openssl'
+require 'logger'
 require_relative 'database'
 require_relative 'lib/user'
 
@@ -9,6 +10,7 @@ require_relative 'lib/application'
 
 enable :sessions
 set :cookie_manager , Hash.new
+set :logger , Logger.new('log/log.txt', 'daily')
 
 def generate_cookie
   SecureRandom.base64
@@ -42,6 +44,7 @@ get '/session/new' do
 end
 
 post '/session' do
+  settings.logger.info("/session => "+params["user"]["login"])
   if User.authenticate(params["user"])
     login=params["user"]["login"]
     session[:current_user]=login
@@ -97,12 +100,15 @@ get '/:appli/session/new' do
 end
 
 post '/:appli/session' do
+settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
  if User.authenticate(params["user"])
     login=params["user"]["login"]
     session[:current_user]=login
-    # Il faut crypte le login
-    Base64.urlsafe_encode64(login) # avec clogin
-    #redirect Application.find_by_name(appli).adresse+"?"+params["origin"]+"&"+params["secret"]
+    app=Application.find_by_name(params[:appli])
+    pubkey=OpenSSL::PKey::RSA.new(app.key)
+    clogin=pubkey.public_encrypt(login)
+    blogin=Base64.urlsafe_encode64(login)
+    redirect to(app.adresse+params["origin"]+"?login="+blogin+"&secret="+params["secret"])
   end
 end
 

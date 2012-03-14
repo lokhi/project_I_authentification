@@ -14,7 +14,6 @@ end
 
 describe "protected area" do
   context "user not connected" do
-
     it "should redirect to sauth/appli1/session/new?origin=/protected" do
       get '/protected'
       follow_redirect!
@@ -32,9 +31,10 @@ describe "protected area" do
         get '/protected', {"login"=>"dG90bw==", "secret" => "123"}
       end
       
-      
-   	
+      it "should create the key with the file" do
+        OpenSSL::PKey::RSA.should_receive(:new)
+        get '/protected', {"login"=>"dG90bw==", "secret" => "123"}
+      end
     end
-    
   end
 end
