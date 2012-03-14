@@ -100,7 +100,9 @@ post '/:appli/session' do
  if User.authenticate(params["user"])
     login=params["user"]["login"]
     session[:current_user]=login
-    #redirect Application.find_by_name(appli).adresse+params["origin"] 
+    # Il faut crypte le login
+    Base64.urlsafe_encode64(login) # avec clogin
+    #redirect Application.find_by_name(appli).adresse+"?"+params["origin"]+"&"+params["secret"]
   end
 end
 
@@ -117,12 +119,12 @@ get '/admin/applications' do
   "List of applications"
 end
 
-get 'admin/users/:user/destroy' do
-  u = User.find_by_login(user)
+get '/admin/users/:user/destroy' do
+  u = User.find_by_login(params[:user])
   u.destroy
 end
 
-#get 'admin/appli/:appli/destroy' do
- # a = Application.find_by_name(appli)
- # a.destroy
-#end
+get '/admin/appli/:appli/destroy' do
+  a = Application.find_by_name(params[:appli])
+  a.destroy
+end

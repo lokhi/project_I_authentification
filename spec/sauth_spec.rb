@@ -159,14 +159,20 @@ describe "authentification of an user call by an application" do
       end
     
       it "should use the user authentification" do
-        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected"}
+        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
         User.should_receive(:authenticate).with(params["user"])
         post '/appli1/session', params
       end
       
       it "should register the user into the current user_session" do
-        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected"}
+        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
         last_request.env["rack.session"]["current_user"].should == "toto"
+      end
+      
+      it "should encode the encrypt login in base64" do
+        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        Base64.should_receive(:urlsafe_encode64)
+        post '/appli1/session', params
       end
       
       
@@ -212,14 +218,14 @@ describe "the admin part" do
       last_response.body.should include("List of applications")
     end
     
-    #it "should delete an application" do
-     # a=double("appli")
-     # Application.stub(:find_by_name){a}
-     # a.stub(:destroy)
-     # Application.should_receive(:find_by_name).with("appli")
-     # a.should_receive(:destroy)
-     # get '/admin/appli/appli1/destroy'
-    #end 
+    it "should delete an application" do
+      a=double("appli")
+      Application.stub(:find_by_name){a}
+      a.stub(:destroy)
+      Application.should_receive(:find_by_name).with("appli1")
+      a.should_receive(:destroy)
+      get '/admin/appli/appli1/destroy'
+    end 
   end
 end
 
