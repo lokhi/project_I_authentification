@@ -21,19 +21,23 @@ describe "protected area" do
     end
     
     context "receiving the sauth response" do
+    	before(:each) do
+    	  @params={"login"=>"dG90bw==", "secret"=>"123" }
+    	  @session={"rack.session" => { "123" => Time.now.to_i }}
+    	end
       it "should decode the login in base64" do
          Base64.should_receive(:urlsafe_decode64).with("dG90bw==")
-         get '/protected', {"login"=>"dG90bw==", "secret"=>"123"}
+         get '/protected',@params , @session
       end
       
       it "should read the private key" do
         File.should_receive(:read).with("private.pem")
-        get '/protected', {"login"=>"dG90bw==", "secret" => "123"}
+        get '/protected',@params , @session
       end
       
       it "should create the key with the file" do
         OpenSSL::PKey::RSA.should_receive(:new)
-        get '/protected', {"login"=>"dG90bw==", "secret" => "123"}
+        get '/protected',@params , @session
       end
     end
   end
