@@ -197,11 +197,11 @@ describe "authentification of an user call by an application" do
         post '/appli1/session', params
       end
       
-      #it "should redirect to the origin application" do
-        #post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-        #follow_redirect!
-        #last_request.path.should include("http://appli/protected")
-      #end
+      it "should redirect to the origin application" do
+        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        follow_redirect!
+        last_request.url.should include("http://appli/protected")
+      end
       #it "should record that user use this application" do
         
       #end

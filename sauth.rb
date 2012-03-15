@@ -8,7 +8,7 @@ require_relative 'lib/user'
 
 require_relative 'lib/application'
 
-enable :sessions
+#enable :sessions
 set :cookie_manager , Hash.new
 set :logger , Logger.new('log/log.txt', 'daily')
 
@@ -19,7 +19,7 @@ end
 helpers do 
   def current_user
     cookie = request.cookies["sauthCookie"]
-    if !cookie.nil? && session["current_user"].nil?
+    if !cookie.nil?
       session["current_user"]=settings.cookie_manager[cookie]
     end
     session["current_user"]
