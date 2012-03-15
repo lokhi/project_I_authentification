@@ -47,7 +47,7 @@ post '/session' do
   settings.logger.info("/session => "+params["user"]["login"])
   if User.authenticate(params["user"])
     login=params["user"]["login"]
-    session[:current_user]=login
+    session["current_user"]=login
     cookie=generate_cookie
     settings.cookie_manager[cookie]=login
     response.set_cookie("sauthCookie",:value => cookie,:expires => Time.now+24*60*60) # 1 jour d'expiration
@@ -103,7 +103,7 @@ post '/:appli/session' do
 settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
  if User.authenticate(params["user"])
     login=params["user"]["login"]
-    session[:current_user]=login
+    session["current_user"]=login
     app=Application.find_by_name(params[:appli])
     pubkey=OpenSSL::PKey::RSA.new(app.key)
     clogin=pubkey.public_encrypt(login)

@@ -12,7 +12,7 @@ describe "accessing to the site without being connected" do
     last_request.path.should == '/session/new'
   end
   it "should print the home page of the user" do
-   get '/',{},"rack.session" => { :current_user => "toto" }
+   get '/',{},"rack.session" => { "current_user" => "toto" }
    last_response.body.should include("Hello toto")
   end
   
