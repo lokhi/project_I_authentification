@@ -1,6 +1,5 @@
 require 'spec_helper'
 require_relative '../sauth'
-
 def app
   Sinatra::Application
 end
@@ -163,42 +162,20 @@ describe "authentification of an user call by an application" do
     
     context "params are valid" do
       before(:each)do
-        app = double(Application)
-        key = double("key")
-        User.stub(:authenticate){true}
-        Application.stub(:find_by_name){app}
-        app.stub(:key){"123"}
-        OpenSSL::PKey::RSA.stub(:new){key}
-        key.stub(:public_encrypt){"toto"}
-        app.stub(:adresse){"http://appli"}
+        @app = double(Application)
+        User.stub(:appli_authenticate){"cryptedtoto"}
+        Application.stub(:find_by_name){@app}
+        @app.stub(:adresse){"http://appli"}
+        @params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
       end
     
-      it "should use the user authentification" do
-        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-        User.should_receive(:authenticate).with(params["user"])
-        post '/appli1/session', params
+      it "should use the user appli_authentification" do
+        User.should_receive(:appli_authenticate).with(@params["user"],"appli1")
+        post '/appli1/session', @params
       end
-      
-      it "should register the user into the current user_session" do
-        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-        last_request.env["rack.session"]["current_user"].should == "toto"
-      end
-      
-      it "should encode the encrypt login in base64" do
-        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-        Base64.should_receive(:urlsafe_encode64)
-        post '/appli1/session', params
-      end
-      
-      
-      it "should encrypt the login with the public key of the application" do
-        params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-        OpenSSL::PKey::RSA.should_receive(:new)
-        post '/appli1/session', params
-      end
-      
+
       it "should redirect to the origin application" do
-        post '/appli1/session',{"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        post '/appli1/session',@params
         follow_redirect!
         last_request.url.should include("http://appli/protected")
       end
