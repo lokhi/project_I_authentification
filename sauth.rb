@@ -97,7 +97,7 @@ end
 
 
 get '/:appli/session/new' do
-  if current_user
+  if current_user	
     blogin = Application.appli_crypte_encode(params["appli"],current_user)
     app=Application.find_by_name(params["appli"])
     redirect to app.adresse+params["origin"]+"?secret="+params["secret"]
@@ -122,16 +122,10 @@ end
 
 
 get '/admin' do
-  "Administration"
+
+  "Administration List of applications List of users"  
 end
 
-get '/admin/users' do
-  "List of users"
-end
-
-get '/admin/applications' do
-  "List of applications"
-end
 
 get '/admin/users/:user/destroy' do
   u = User.find_by_login(params[:user])

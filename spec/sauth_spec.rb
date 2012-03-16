@@ -209,9 +209,7 @@ describe "authentification of an user call by an application" do
         follow_redirect!
         last_request.url.should include("http://appli/protected")
       end
-      #it "should record that user use this application" do
-        
-      #end
+ 
     end
     
    
@@ -229,8 +227,9 @@ describe "the admin part" do
   
   context "connect as admin" do
     it "should list all users of the sauth" do
-      get '/admin/users'
+      get '/admin'
       last_response.body.should include("List of users")
+       last_response.body.should include("List of applications")
     end
     
     it "should delete an user" do
@@ -242,10 +241,7 @@ describe "the admin part" do
       get '/admin/users/toto/destroy'
     end 
     
-    it "should list all application who uses the sauth" do
-      get '/admin/applications'
-      last_response.body.should include("List of applications")
-    end
+ 
     
     it "should delete an application" do
       a=double("appli")
