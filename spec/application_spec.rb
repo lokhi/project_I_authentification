@@ -41,6 +41,8 @@ describe "information missing" do
  
 end
 
+
+
 describe "duplicate name" do
   it "should not be valid with a name who already exist" do
     a = Application.new({"name"=>"appli1","adresse"=>"adrs","key"=>"1234","user_id"=>User.new})
@@ -51,44 +53,35 @@ describe "duplicate name" do
 end
 end
 
-describe "encryption of a login with the application key" do
- before(:each) do
-      @app = double(Application)
-      Application.stub(:find_by_name){@app}
-      @app.stub(:key){"-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDvqAuECzBu8JYrYleC245UZVyB
-3N11guYosh0fHaAstywPWblHwq0es92nxEtp/qin051s+48/0lu1eKQnpfhRqOIm
-xRhnyn9Vl7eR2Ssjg/yIhu+Q1nQgAnviWa6ktFbKgnxayy4Jd2a0XDsnxDWr21bQ
-mEbgekzzcZIEijHeLQIDAQAB
------END PUBLIC KEY-----"}
-       @pubkey = double(OpenSSL::PKey::RSA)
-       OpenSSL::PKey::RSA.stub(:new){@pubkey}
-       @pubkey.stub(:public_encrypt){"totoc"}
-       
-    end
-     
-     it "should read the private key of the application" do
-        Application.should_receive(:find_by_name).and_return(@app)
-        @app.should_receive(:key)
-        Application.appli_crypte_encode("appli","toto")
-      end
-      
-    it "should create the key with the file" do
-      OpenSSL::PKey::RSA.should_receive(:new)
-      Application.appli_crypte_encode("appli","toto")
-    end
-    
-    it "should encrypt the login" do
-      @pubkey.should_receive(:public_encrypt).with("toto")
-      Application.appli_crypte_encode("appli","toto")
-    end
-    
-    it "should encode the encrypted login" do
-      Base64.should_receive(:urlsafe_encode64)
-      Application.appli_crypte_encode("appli","toto")
-    end
-end
 
+describe "redirect link generation" do
+
+  before (:each) do
+    @app=double(Application)
+    Application.stub(:appli_crypte_encode){"totocrypted"}
+    Application.stub(:find_by_name){@app}
+    @app.stub(:adresse){"http://appli1.com"}
+  end
+  
+   it "should include the password module" do
+    Application.included_modules.should include(CrypteEncode)
+  end
+  
+  it "should encrypte the login" do
+    Application.should_receive(:appli_crypte_encode)
+    Application.generate_link("appli","toto","/protected","secret")
+  end
+  
+  it "should find the application in the db" do
+    Application.should_receive(:find_by_name)
+    Application.generate_link("appli","toto","/protected","secret")
+  end
+
+  it "should return the redirect adresse" do
+    Application.generate_link("appli","toto","/protected","secret").should == "http://appli1.com/protected?login=totocrypted&secret=secret"
+  end
+
+end
 
 
   
