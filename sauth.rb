@@ -31,12 +31,13 @@ helpers do
   end
 end
 
+before '/' do
+  redirect "/session/new" if !current_user 
+end
+
+
 get '/' do
-  if current_user # A faire avec le before
    "Hello #{current_user}"
-  else
-    redirect "/session/new"
-  end
 end
 
 get '/session/new' do
@@ -57,7 +58,6 @@ post '/session' do
     else
       redirect "/"
     end
-    
   else
     erb :"login"
   end
@@ -68,9 +68,9 @@ get '/user/new' do
 end
 
 post '/user' do
- u = User.new(params["user"])
- if u.save
-   redirect "/login"
+ @u = User.new(params["user"])
+ if @u.save
+   redirect "/session/new"
  else
    erb :"register"
  end
@@ -84,7 +84,7 @@ end
 post '/appli' do
   a = Application.new(params["appli"])
   if  a.save
-  redirect "/appli/#{params["appli"]["name"]}"
+    redirect "/appli/#{params["appli"]["name"]}"
   else
     "<title>Application register</title>"
   end
@@ -97,16 +97,27 @@ end
 
 
 get '/:appli/session/new' do
-  "#{appli} login page"
+  if current_user
+    blogin = Application.appli_crypte_encode(params["appli"],current_user)
+    app=Application.find_by_name(params["appli"])
+    redirect to app.adresse+params["origin"]+"?secret="+params["secret"]
+  else
+    "#{appli} login page"
+  end
 end
 
 post '/:appli/session' do
   settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
-  app=Application.find_by_name(params[:appli])
-  if blogin=User.appli_authenticate(params["user"],params[:appli])
-    session["current_user"]=params["user"]["login"]
-    redirect to(app.adresse+params["origin"]+"?login="+blogin+"&secret="+params["secret"])
+  if u=User.authenticate(params["user"])
+    session["current_user"]=u.login
+    blogin = Application.appli_crypte_encode(params["appli"],u.login)
+    #Application.utilisation(u.login,params["appli"])
+    app=Application.find_by_name(params["appli"])
+    redirect to app.adresse+params["origin"]+"?secret="+params["secret"]
+  else
+    "#{appli} login page"
   end
+  
 end
 
 
