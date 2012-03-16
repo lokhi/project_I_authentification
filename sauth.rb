@@ -110,10 +110,7 @@ post '/:appli/session' do
   settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
   if u=User.authenticate(params["user"])
     session["current_user"]=u.login
-    blogin = Application.appli_crypte_encode(params["appli"],u.login)
-    #Application.utilisation(u.login,params["appli"])
-    app=Application.find_by_name(params["appli"])
-    redirect to app.adresse+params["origin"]+"?secret="+params["secret"]
+    redirect to Application.generate_link(params["appli"],u.login,params["origin"],params["secret"])
   else
     "#{appli} login page"
   end

@@ -183,13 +183,10 @@ describe "authentification of an user call by an application" do
     
     context "params are valid" do
       before(:each)do
-        @app = double(Application)
         @u=double(User)
         @u.stub(:login){"toto"}
         User.stub(:authenticate){@u}
-        Application.stub(:find_by_name){@app}
-        Application.stub(:appli_crypte_encode){"totocrypted"}
-        @app.stub(:adresse){"http://appli"}
+        Application.stub(:generate_link){"http://appli1/protected?login=totocrypted&secret=secret"}
         @params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
       end
     
@@ -200,14 +197,16 @@ describe "authentification of an user call by an application" do
       end
       
       it "should use the encryption of the login by application" do
-        Application.should_receive(:appli_crypte_encode)
+        Application.should_receive(:generate_link)
         post '/appli1/session', @params
       end
       
       it "should redirect to the origin application" do
         post '/appli1/session',@params
+        print last_response.body
         follow_redirect!
-        last_request.url.should include("http://appli/protected")
+        last_request.url.should == "http://appli1/protected?login=totocrypted&secret=secret"
+        
       end
  
     end
