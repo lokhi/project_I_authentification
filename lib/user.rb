@@ -1,7 +1,5 @@
 require 'digest/sha1'
 require 'active_record'
-require 'openssl'
-require_relative 'application'
 
 class User < ActiveRecord::Base
 
@@ -28,14 +26,5 @@ class User < ActiveRecord::Base
   end
   
   
-  def self.appli_authenticate(hash,appli)
-    if User.authenticate(hash)
-    	key=Application.find_by_name(appli).key
-    	pubkey=OpenSSL::PKey::RSA.new(key)
-    	clogin=pubkey.public_encrypt(hash["login"])
-    	blogin=Base64.urlsafe_encode64(clogin)
-    else
-      nil
-    end
- end
+  
 end
