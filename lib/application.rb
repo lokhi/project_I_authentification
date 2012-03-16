@@ -13,18 +13,12 @@ include CrypteEncode
   validates :key, :presence => true
   validates :user_id, :presence => true  
   
-  
-  def self.appli_crypte_encode(appli,login)
-    key=Application.find_by_name(appli).key
-    pubkey=OpenSSL::PKey::RSA.new(key)
-    clogin=pubkey.public_encrypt(login)
-    blogin=Base64.urlsafe_encode64(clogin)
-  end
-  
+
   
   def self.generate_link(appli,login,orig,secret)
-    blogin=Application.appli_crypte_encode(appli,login)
+    #blogin=Application.appli_crypte_encode(appli,login)
     app=Application.find_by_name(appli)
+    blogin=app.cypher(app.key,login)
     app.adresse+orig+"?login="+blogin+"&secret="+secret
   end
   

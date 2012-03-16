@@ -61,16 +61,14 @@ describe "redirect link generation" do
     Application.stub(:appli_crypte_encode){"totocrypted"}
     Application.stub(:find_by_name){@app}
     @app.stub(:adresse){"http://appli1.com"}
+    @app.stub(:key){"123"}
+    @app.stub(:cypher){"totocrypted"}
   end
   
    it "should include the password module" do
     Application.included_modules.should include(CrypteEncode)
   end
   
-  it "should encrypte the login" do
-    Application.should_receive(:appli_crypte_encode)
-    Application.generate_link("appli","toto","/protected","secret")
-  end
   
   it "should find the application in the db" do
     Application.should_receive(:find_by_name)
