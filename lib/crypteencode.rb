@@ -5,6 +5,13 @@ module CrypteEncode
   def cypher(key,login)
     pubkey=OpenSSL::PKey::RSA.new(key)
     clogin=pubkey.public_encrypt(login)
-    blogin=Base64.urlsafe_encode64(clogin)
+    elogin=Base64.urlsafe_encode64(clogin)
+  end
+  
+  
+  def decypher(key,elogin)
+    clogin=Base64.urlsafe_decode64(elogin)
+    privkey=OpenSSL::PKey::RSA.new(key)
+    login=privkey.private_decrypt(clogin)
   end
 end
