@@ -82,5 +82,30 @@ describe "redirect link generation" do
 end
 
 
-  
+describe "listing of all application use by someone" do
+  before(:each) do
+    @use=double(Use)
+    Use.stub(:where){@use}
+    @use.stub(:each){@use}
+    @use.stub(:application_id){1}
+  end
 
+  it "should use the where methode of Use" do
+    Use.should_receive(:where)
+    Application.list_app_used_by(1)
+  end
+  
+  it "should list the result of where" do
+    @use.should_receive(:each)
+    Application.list_app_used_by(1)
+  end
+  
+  #it "should search the application with an id" do
+    #Application.should_receive(:find_by_id)
+    #Application.list_app_used_by(1)
+  #end
+  
+  it "should return a tab" do
+    Application.list_app_used_by(1).should be_an Array
+  end
+end

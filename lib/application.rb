@@ -1,6 +1,7 @@
 require 'active_record'
 require 'openssl'
 require_relative 'crypteencode'
+require_relative 'use'
 
 class Application < ActiveRecord::Base
 include CrypteEncode
@@ -16,10 +17,20 @@ include CrypteEncode
 
   
   def self.generate_link(appli,login,orig,secret)
-    #blogin=Application.appli_crypte_encode(appli,login)
     app=Application.find_by_name(appli)
     blogin=app.cypher(app.key,login)
     app.adresse+orig+"?login="+blogin+"&secret="+secret
+  end
+  
+  def self.list_app_used_by(id)
+    use=Use.where(:user_id => id)
+    res=[]
+    if use
+      use.each do |u|
+        res.push(Application.find_by_id(u.application_id))
+      end
+    end
+    res
   end
   
 end
