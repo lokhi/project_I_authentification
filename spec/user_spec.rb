@@ -25,6 +25,13 @@ after(:each) do
     u.valid?.should == false
   end
   
+  it "should not be valid with an empty password" do
+    u = User.new
+    u.login="toto"
+    u.password = ""
+    u.valid?.should == false
+  end
+  
    context "duplicate login" do
   
     it "should not be valid with a login who already exists" do
