@@ -21,6 +21,7 @@ describe "accessing to the homepage" do
       get '/',{},"rack.session" => { "current_user" => "toto" }
       last_response.body.should include("Hello toto")
     end
+    
   end
 end
 

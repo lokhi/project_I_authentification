@@ -25,6 +25,10 @@ helpers do
     end
     session["current_user"]
   end
+  
+  def cUser
+    User.find_by_login(current_user)
+  end
 
   def disconnect
     session["current_user"] = nil
@@ -102,13 +106,13 @@ post '/appli' do
   end
 end
 
-
-
 get '/:appli/session/new' do
   if current_user	
     redirect Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
   else
     @a=Application.find_by_name(params["appli"])
+    @or=params["origin"]
+    @s=params["secret"]
     erb :"appli_login"
   end
 end
@@ -117,6 +121,7 @@ post '/:appli/session' do
   settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
   if @u=User.authenticate(params["user"])
     session["current_user"]=@u.login
+    #user use this appli !
     redirect to Application.generate_link(params["appli"],@u.login,params["origin"],params["secret"])
   else
     @a=Application.find_by_name(params["appli"])
@@ -127,16 +132,20 @@ end
 
 
 get '/admin' do
-  "Administration List of applications List of users"  
+  @u=User.all
+  @a=Application.all
+  erb :"admin"
 end
 
 
 get '/admin/users/:user/destroy' do
   u = User.find_by_login(params[:user])
   u.destroy
+  redirect '/admin'
 end
 
 get '/admin/appli/:appli/destroy' do
   a = Application.find_by_name(params[:appli])
   a.destroy
+  redirect '/admin'
 end
