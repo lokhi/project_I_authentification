@@ -1,31 +1,43 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Registration page</title>
-</head>
-<body>
-
-<h1>Welcome to the authentification service</h1>
-<p>To suscribe thank you for completing this form</p>
-
-<form action="/user" method="post">
-  <div class="field">
-  
-  <p class="notice"></p>
-    <label for="sauth_login">Login</label><br />
-
-    <input id="sauth_login" name="login" size="30" type="text" />
-  </div>
-  <div class="field">
-    <label for="sauth_password">Password</label><br />
-    <input id="sauth_password" name="password" size="30" type="password" />
-  </div>
-  <div class="actions">
-    <input name="commit" type="submit" value="Create my account" />
-
-  </div>
-</form>
-
-</body>
-</html>
-
+	<head>
+		<meta charset="utf-8" />
+		<title>Registration page</title>
+		<link rel="stylesheet" href="/style.css" />
+	</head>
+	<body class="redbody">
+		<div class="register">
+			<div class="register_img">
+				<img src="/ruby.png" alt="ruby" />
+			</div>
+			<div class="content">
+				<h2>Create an Account</h2>
+				<div class="form_part">
+					<p class="register_info">
+					Your RubyAuth account gives you acces to all application who uses RubyAuth.
+					</p>
+					<div class="register_error">
+				          <% if @u %>
+				          <%= @u.errors.full_messages %>
+				          <% end %>
+					</div>
+					<div class="register_form">
+						<form method="post" action="/user">
+								<label>Login : </label>
+								<input type="text" name="user[login]" value="<%= if @u; @u.login end %>"/>
+								<br /><br />
+								<label>Password : </label>
+								<input type="password" name="user[password]" />
+								<br />
+								<br />
+								<div>
+									<input type="submit" value="Create" />
+								</div>
+								<p class="signup">Already have an account? <a class="red" href="session/new">Sign inp</a>. </p>
+						</form>
+					</div>
+				</div>
+			</div>
+		 </div>
+	</body>
+</html>	

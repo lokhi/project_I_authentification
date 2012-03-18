@@ -20,7 +20,7 @@ end
 helpers do 
   def current_user
     cookie = request.cookies["sauthCookie"]
-    if !cookie.nil?
+    if !cookie.nil? && session["current_user"].nil?
       session["current_user"]=settings.cookie_manager[cookie]
     end
     session["current_user"]
@@ -35,9 +35,19 @@ before '/' do
   redirect "/session/new" if !current_user 
 end
 
+before '/appli/new' do
+  redirect "/session/new" if !current_user 
+end
+
+before '/admin' do
+  redirect "/session/new" if !(current_user=="admin")
+end
 
 get '/' do
-   "Hello #{current_user}"
+   @u=User.find_by_login(current_user)
+   @Dapp=Application.where(:user_id => @u.id)
+   @Uapp=Application.list_app_used_by(@u.id)
+   erb :"index"
 end
 
 get '/session/new' do
@@ -59,6 +69,7 @@ post '/session' do
       redirect "/"
     end
   else
+    @u=User.new(params["user"])
     erb :"login"
   end
 end
@@ -78,48 +89,44 @@ end
 
 
 get '/appli/new' do
-  "<title>Application register</title>"
+  erb :"form_appli"
 end
 
 post '/appli' do
-  a = Application.new(params["appli"])
-  if  a.save
-    redirect "/appli/#{params["appli"]["name"]}"
+  u=User.find_by_login(current_user)
+  @a = Application.new(params["appli"].merge("user_id"=>u.id))
+  if  @a.save
+    redirect "/"
   else
-    "<title>Application register</title>"
+    erb :"form_appli"
   end
 end
 
 
-get '/appli/:appli' do
-  "Application #{appli}"
-end
-
 
 get '/:appli/session/new' do
   if current_user	
-    blogin = Application.appli_crypte_encode(params["appli"],current_user)
-    app=Application.find_by_name(params["appli"])
-    redirect to app.adresse+params["origin"]+"?secret="+params["secret"]
+    redirect Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
   else
-    "#{appli} login page"
+    @a=Application.find_by_name(params["appli"])
+    erb :"appli_login"
   end
 end
 
 post '/:appli/session' do
   settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
-  if u=User.authenticate(params["user"])
-    session["current_user"]=u.login
-    redirect to Application.generate_link(params["appli"],u.login,params["origin"],params["secret"])
+  if @u=User.authenticate(params["user"])
+    session["current_user"]=@u.login
+    redirect to Application.generate_link(params["appli"],@u.login,params["origin"],params["secret"])
   else
-    "#{appli} login page"
+    @a=Application.find_by_name(params["appli"])
+    erb :"appli_login"
   end
   
 end
 
 
 get '/admin' do
-
   "Administration List of applications List of users"  
 end
 

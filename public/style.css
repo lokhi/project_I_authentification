@@ -1,0 +1,284 @@
+.redbody{
+	margin:0px;
+	padding:0px;
+	height: 100%;
+	background:#820500;
+}
+a img{
+border:none;
+}
+.clear{
+clear:both;
+}
+a.red{
+color:#820500;
+text-decoration:underline;
+}
+/* LOGIN */
+.login{
+margin-left:auto;
+margin-right:auto;
+margin-top:15%;
+width:600px;
+height:200px;
+text-align:center;
+
+}
+.login_img{
+float:left;
+width:257px;
+height:257px;
+margin-right:-100px;
+}
+
+.login_form{
+margin-top:20px;
+width:300px;
+float:left;
+background:#FFFFFF;
+border:none;
+padding:20px;
+font-family:Arial;
+border-radius: 10px;
+box-shadow: 2px 2px 10px white;
+}
+.login_form label {
+font-size:14px;
+ font-weight:bold; 
+ color:#666666;
+ width:90px;
+ float:left;
+ text-align:right;
+ padding-right:10px
+}
+
+
+.error{
+font-family:Arial;
+font-size:12px;
+font-weight:bold;
+color:#FF1313;
+text-align:center;
+margin-top:0px;
+}
+
+.signup{
+font-family:Arial;
+font-size:12px;
+color:black;
+text-align:center;
+margin-top:10px;
+margin-bottom:0px;
+}
+
+/* FIN LOGIN */
+
+
+/* REGISTER */
+.register{
+margin-left:auto;
+margin-right:auto;
+margin-top:15%;
+width:800px;
+height:200px;
+text-align:center;
+}
+.register_img{
+float:left;
+width:257px;
+height:257px;
+margin-right:-75px;
+}
+.register_info{
+font-family:Arial;
+font-size:14px;
+color:#000000;
+text-align:justify;
+padding:10px;
+margin-top:0px;
+
+}
+.register_form{
+margin-left:auto;
+margin-right:auto;
+width:300px;
+border:none;
+padding:20px;
+font-family:Arial;
+}
+.content{
+margin-top:-20px;
+background:#FFFFFF;
+float:left;
+border-radius: 10px;
+box-shadow: 2px 2px 10px white;
+}
+.content h2{
+font-family:Arial;
+font-size:16px;
+ font-weight:bold; 
+ color:#000000;
+}
+.register_form label {
+font-size:14px;
+ font-weight:bold; 
+ color:#666666;
+ width:90px;
+ float:left;
+ text-align:right;
+ padding-right:10px
+}
+
+.register_error{
+font-family:Arial;
+font-size:12px;
+font-weight:bold;
+color:#FF1313;
+text-align:center;
+margin-top:0px;
+}
+
+
+/* FIN REGISTER */
+
+
+/* INDEX */
+.body_index{
+margin:0px;
+background:#F8F8F8;
+}
+.header_index{
+background:#820500;
+height:110px;
+}
+
+.header_img{
+margin-left:30px;
+padding-top:10px;
+float:left;
+}
+
+.header_text{
+float:left;
+font-family:Arial;
+color:#FFFFFF;
+font-size:40px;
+width:600px;
+margin-left:20%;
+padding-top:30px;
+}
+
+.effect{
+background: #ffffff url('effect.gif') 0px 1px repeat-x;
+height:50px;
+
+}
+.box{
+width:80%;
+margin-right:auto;
+margin-left:auto;
+border:1px solid #cdcdcd;
+border-radius: 10px;
+padding:20px;
+font-family:Arial;
+color:#000000;
+}
+
+.box h1{
+border-bottom:1px dotted #cdcdcd;
+}
+
+.appli_title{
+float:left;
+}
+.appli_img{
+float:left;
+padding-top:20px;
+margin-left:10px;
+}
+/* FIN INDEX */
+
+
+/* FORM ADD APPLI */
+.box_form_appli h1{
+border-bottom:1px dotted #cdcdcd;
+}
+.box_form_appli{
+width:50%;
+margin-right:auto;
+margin-left:auto;
+border:1px solid #cdcdcd;
+border-radius: 10px;
+padding:20px;
+font-family:Arial;
+color:#000000;
+}
+
+.appli_form{
+border:none;
+padding:20px;
+font-family:Arial;
+margin-bottom:20px;
+
+}
+.appli_form div{
+text-align:center;
+}
+.appli_form label {
+font-size:14px;
+ font-weight:bold; 
+ color:#666666;
+ width:90px;
+ float:left;
+ text-align:right;
+ padding-right:10px
+}
+
+
+/* FIN FORM ADD APPLI */
+
+
+/* APPLI LOGIN */
+
+
+.box_appli{
+width:700px;
+height:200px;
+margin-top:10%;
+margin-right:auto;
+margin-left:auto;
+border:1px solid #cdcdcd;
+border-radius: 10px;
+padding:20px;
+font-family:Arial;
+color:#000000;
+}
+.appli_intro{
+width:300px;
+padding:20px;
+font-family:Arial;
+float:left;
+
+}
+
+.appli_login_form div{
+ text-align:right;
+ margin-right:8%;
+}
+.appli_login_form{
+width:300px;
+padding:20px;
+font-family:Arial;
+float:left;
+border-left:1px dotted #cdcdcd;
+}
+.appli_login_form label {
+font-size:14px;
+ font-weight:bold; 
+ color:#666666;
+ width:90px;
+ float:left;
+ text-align:right;
+ padding-right:10px
+}
+/* FIN APPLI LOGIN */

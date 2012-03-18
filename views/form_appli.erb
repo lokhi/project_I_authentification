@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Application register</title>
+		<link rel="stylesheet" href="/style.css" />
+	</head>
+	<body class="body_index">
+		<div class="header_index">
+			<div class="header_img">
+				<img src="/ruby.png" width="100px" height="100px" alt="logo" />
+			</div>
+			<div class="header_text">
+			Authentification service
+			</div>
+		</div>
+		<div class="effect">&nbsp;</div>
+		<div class="index_content">
+			<div class="box_form_appli">
+				<h1>Register a new application</h1>
+				<div class="register_error">
+				  <% if @a %>
+				    <%= @a.errors.full_messages %>
+				  <% end %>
+				</div>
+				<div class="appli_form">
+					<form method="post" action="/appli">
+						<label>name : </label>
+						<input type="text" name="appli[name]" value="<%= if @a; @a.name end %>"/>
+						<br /><br />
+						<label>adresse : </label>
+						<input type="text" name="appli[adresse]" value="<%= if @a; @a.adresse end %>"/>
+						<br />
+						<br />
+						<label>public key : </label>
+						<textarea name="appli[key]" cols="50" rows="10"><%= if @a; @a.key end %></textarea>
+						<br />
+						<br /> 
+						<div>
+						<input type="submit" value="Create" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>	
