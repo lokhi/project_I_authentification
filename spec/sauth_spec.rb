@@ -197,22 +197,31 @@ describe "authentification of an user call by an application" do
   context "the user is not connect to the sauth" do
     it "should return the login form" do
     	get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"}
-    	last_response.body.should include("appli1 login page")
+    	last_response.body.should include("<title>appli1 - login</title>")
     end
     
     context "params are valid" do
       before(:each)do
         @u=double(User)
         @u.stub(:login){"toto"}
+        @u.stub(:id)
         User.stub(:authenticate){@u}
         Application.stub(:generate_link){"http://appli/protected?login=totocrypted&secret=secret"}
         @params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
+        @us=double(Use)
+        @us.stub(:application_id)
+        @us.stub(:user_id)
       end
     
     
       it "should use the user appli_authentification" do
         User.should_receive(:authenticate).with(@params["user"])
         post '/appli1/session', @params
+      end
+      
+      it "should save that the user use this application" do
+        Use.should_receive(:new)
+         post '/appli1/session', @params
       end
       
       it "should use the encryption of the login by application" do
@@ -232,6 +241,8 @@ describe "authentification of an user call by an application" do
    
   end
 end
+
+
 
 describe "the admin part" do
 
@@ -268,6 +279,14 @@ describe "the admin part" do
       a.should_receive(:destroy)
       get '/admin/appli/appli1/destroy'
     end 
+  end
+end
+
+
+describe "delete application on the user page" do
+  it "should get the user corresponding to the current user" do
+    User.should_receive(:find_by_login)
+    get '/appli/app1/destroy',{},"rack.session" => { "current_user" => "toto" }
   end
 end
 

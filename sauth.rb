@@ -8,7 +8,7 @@ require_relative 'lib/user'
 
 require_relative 'lib/application'
 
-#enable :sessions  
+enable :sessions  
 
 set :cookie_manager , Hash.new
 set :logger , Logger.new('log/log.txt', 'daily')
@@ -20,16 +20,12 @@ end
 helpers do 
   def current_user
     cookie = request.cookies["sauthCookie"]
-    if !cookie.nil? && session["current_user"].nil?
+    if session["current_user"].nil? && !cookie.nil?
       session["current_user"]=settings.cookie_manager[cookie]
     end
     session["current_user"]
   end
   
-  def cUser
-    User.find_by_login(current_user)
-  end
-
   def disconnect
     session["current_user"] = nil
   end
@@ -78,6 +74,11 @@ post '/session' do
   end
 end
 
+get '/session/destroy' do
+  disconnect
+  redirect '/'
+end
+
 get '/user/new' do
   erb :"register"
 end
@@ -106,9 +107,18 @@ post '/appli' do
   end
 end
 
-get '/:appli/session/new' do
+get '/appli/:appli/destroy' do
+   u=User.find_by_login(current_user)
+   a=Application.find_by_name(params[:appli])
+   if a.user_id == u.id
+   	a.destroy
+   end
+   redirect '/'
+end
+
+get '/:appli/session/new' do	
   if current_user	
-    redirect Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
+    redirect to Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
   else
     @a=Application.find_by_name(params["appli"])
     @or=params["origin"]
@@ -122,6 +132,10 @@ post '/:appli/session' do
   if @u=User.authenticate(params["user"])
     session["current_user"]=@u.login
     #user use this appli !
+    us=Use.new
+    us.user_id=@u.id
+    us.application_id=Application.find_by_name(params["appli"]).id
+    us.save
     redirect to Application.generate_link(params["appli"],@u.login,params["origin"],params["secret"])
   else
     @a=Application.find_by_name(params["appli"])
