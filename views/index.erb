@@ -43,7 +43,7 @@
 				<h2>Applications who use your Account</h2>
 				  <% if @Uapp && !@Uapp.empty? %>
 				<ul>
-  				  <% @Dapp.each do |app| %>
+  				  <% @Uapp.each do |app| %>
 				  <li><%= app.name %></li>
 				  <% end %>
 				</ul>
