@@ -3,8 +3,8 @@ require 'active_record'
 
 class User < ActiveRecord::Base
 
-  has_many :applications
-  has_many :uses
+  has_many :applications, :dependent => :delete_all
+  has_many :uses, :dependent => :delete_all
   
   validates :login, :presence => true
   validates :password, :presence => true

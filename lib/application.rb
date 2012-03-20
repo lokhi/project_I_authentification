@@ -6,7 +6,7 @@ require_relative 'use'
 class Application < ActiveRecord::Base
 include CrypteEncode
   belongs_to :user
-  has_many :uses
+  has_many :uses, :dependent => :delete_all
 
   validates :name, :presence => true
   validates :adresse, :presence => true
