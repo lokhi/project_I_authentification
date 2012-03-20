@@ -18,7 +18,7 @@
 					</p>
 					<div class="register_error">
 				          <% if @u %>
-				          <%= @u.errors.full_messages %>
+				          <%= @u.errors.full_messages.join('<br />') %>
 				          <% end %>
 					</div>
 					<div class="register_form">

@@ -20,7 +20,7 @@
 				<h1>Register a new application</h1>
 				<div class="register_error">
 				  <% if @a %>
-				    <%= @a.errors.full_messages %>
+				    <%= @a.errors.full_messages.join('<br />') %>
 				  <% end %>
 				</div>
 				<div class="appli_form">
