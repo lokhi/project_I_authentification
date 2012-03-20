@@ -62,10 +62,12 @@ describe "registration" do
   context "with invalid parameters" do
     it "should print the register page" do
       erro=double("errors")
+      tab=double("tab")
       @user.stub(:save){false}
       @user.stub(:login){"testrspec"}
       @user.stub(:errors){erro}
-      erro.stub(:full_messages)
+      erro.stub(:full_messages){tab}
+      tab.stub(:join)
       post '/user', @params
       last_response.should be_ok
       last_response.body.should include("<title>Registration page</title>")
@@ -166,7 +168,9 @@ describe "registration of an application by an user" do
         @appli.stub(:key){"123"}
         erro=double("errors")
         @appli.stub(:errors){erro}
-        erro.stub(:full_messages)
+        tab=double("tab")
+        erro.stub(:full_messages){tab}
+        tab.stub(:join)
         @appli.stub(:save){false}
         post '/appli', @params,"rack.session" => { "current_user" => "toto" }
         last_response.should be_ok
@@ -177,19 +181,32 @@ describe "registration of an application by an user" do
 end
 
 describe "authentification of an user call by an application" do
+  before(:each)do
+    @u=double(User)
+    User.stub(:find_by_login){@u}
+    User.stub(:authenticate){@u}
+    @u.stub(:login){"toto"}
+    @u.stub(:use)
+    @a=double(Application)
+    Application.stub(:find_by_name){@a}
+    @a.stub(:name){"appli1"}
+    @a.stub(:id)
+    Application.stub(:generate_link){"http://appli1/protected?login=totocrypted&secret=secret"}
+      
+  end
   context "the user is connect to the sauth" do
   
     it "should use the encryption of the login by the application" do
       Application.should_receive(:generate_link)
       get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+      print last_response.body
     end
     
     
     it "should redirect to the origin page off application" do
-      Application.stub(:generate_link){"http://appli/protected?login=totocrypted&secret=secret"}
       get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
       follow_redirect!
-      last_request.url.should include("http://appli/protected")
+      last_request.url.should include("http://appli1/protected")
     end
     
   end
@@ -202,15 +219,7 @@ describe "authentification of an user call by an application" do
     
     context "params are valid" do
       before(:each)do
-        @u=double(User)
-        @u.stub(:login){"toto"}
-        @u.stub(:id)
-        User.stub(:authenticate){@u}
-        Application.stub(:generate_link){"http://appli/protected?login=totocrypted&secret=secret"}
         @params={"user"=>{"login"=>"toto","password"=>"1234"},"origin"=>"/protected","secret"=>"foo"}
-        @us=double(Use)
-        @us.stub(:application_id)
-        @us.stub(:user_id)
       end
     
     
@@ -220,8 +229,8 @@ describe "authentification of an user call by an application" do
       end
       
       it "should save that the user use this application" do
-        Use.should_receive(:new)
-         post '/appli1/session', @params
+        @u.should_receive(:use)
+        post '/appli1/session', @params
       end
       
       it "should use the encryption of the login by application" do
@@ -232,7 +241,7 @@ describe "authentification of an user call by an application" do
       it "should redirect to the origin application" do
         post '/appli1/session',@params
         follow_redirect!
-        last_request.url.should == "http://appli/protected?login=totocrypted&secret=secret"
+        last_request.url.should == "http://appli1/protected?login=totocrypted&secret=secret"
         
       end
  

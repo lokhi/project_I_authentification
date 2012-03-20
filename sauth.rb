@@ -5,10 +5,10 @@ require 'openssl'
 require 'logger'
 require_relative 'database'
 require_relative 'lib/user'
-
 require_relative 'lib/application'
+require_relative 'lib/use'
 
-enable :sessions  
+#enable :sessions  
 
 set :cookie_manager , Hash.new
 set :logger , Logger.new('log/log.txt', 'daily')
@@ -118,15 +118,11 @@ get '/appli/:appli/destroy' do
    redirect '/'
 end
 
-get '/:appli/session/new' do	
+get '/:appli/session/new' do
+  @a=Application.find_by_name(params["appli"])	
   if current_user	
-    us=Use.new
-    us.user_id=User.find_by_login(current_user).id
-    us.application_id=Application.find_by_name(params["appli"]).id
-    us.save
     redirect to Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
   else
-    @a=Application.find_by_name(params["appli"])
     @or=params["origin"]
     @s=params["secret"]
     erb :"appli_login"
@@ -134,17 +130,14 @@ get '/:appli/session/new' do
 end
 
 post '/:appli/session' do
+  @a=Application.find_by_name(params["appli"])
   settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"])
   if @u=User.authenticate(params["user"])
     session["current_user"]=@u.login
-    #user use this appli !
-    us=Use.new
-    us.user_id=@u.id
-    us.application_id=Application.find_by_name(params["appli"]).id
-    us.save
+    @u.use(@a.id)
     redirect to Application.generate_link(params["appli"],@u.login,params["origin"],params["secret"])
   else
-    @a=Application.find_by_name(params["appli"])
+    
     erb :"appli_login"
   end
   
