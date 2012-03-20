@@ -68,4 +68,5 @@ after(:each) do
       User.authenticate({"login"=>"toto","password"=>"foo"}).should == u
     end
   end
+
 end
