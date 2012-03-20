@@ -68,8 +68,21 @@ after(:each) do
       User.authenticate({"login"=>"toto","password"=>"foo"}).should == u
     end
   end
-end
 
+
+
+
+describe "check if an user use an application" do
+  it "should look into use if the record exist" do
+  @u = User.new
+    @u.login="toto"
+    @u.password="foo"
+    @u.save
+    Use.should_receive(:exists?)
+    @u.use?(1)
+  end
+
+end
 
 describe "add utilisation of an application" do
   before(:each) do
@@ -78,31 +91,35 @@ describe "add utilisation of an application" do
     @us.stub(:user_id=)
     @us.stub(:application_id=)
     @us.stub(:save)
-    @a=double(Application)
-    @a.stub(:id)
     @u = User.new
     @u.login="toto"
     @u.password="foo"
     @u.save
   end
+  
+  it "should check if the record already exists" do
+  @u.should_receive(:use?)
+  @u.use(1)
+  end
+  
   it "should create an use" do
     Use.should_receive(:new)
-    @u.use("appli")
+    @u.use(1)
   end
   
   it "should fill the user id of Use" do
     @us.should_receive(:user_id=)
-    @u.use(@a.id)
+    @u.use(1)
   end
   
   it "should fill the application of Use" do
     @us.should_receive(:application_id=)
-    @u.use(@a.id)
+    @u.use(1)
   end
   
   it "should save the use" do
     @us.should_receive(:save)
-    @u.use(@a.id)
+    @u.use(1)
   end
-
+end
 end

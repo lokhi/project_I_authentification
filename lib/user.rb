@@ -31,11 +31,17 @@ class User < ActiveRecord::Base
     end
   end
   
+  def use?(id)
+    Use.exists?(:user_id=>self.id,:application_id=>id)
+  end
+  
   def use(id)
-    us=Use.new
-    us.user_id=self.id
-    us.application_id=id
-    us.save
+    if !self.use?(id)
+      us=Use.new
+      us.user_id=self.id
+      us.application_id=id
+      us.save
+    end
   end
   
 end

@@ -133,6 +133,9 @@ describe "registration of an application by an user" do
     @params={"appli" => {"name"=>"appli1", "adresse"=>"http://appli1.com"}}
     @appli = double ("appli")
     Application.stub(:new){@appli}
+    @u=double(User)
+    User.stub(:find_by_login){@u}
+    @u.stub(:id){1}
   end
     
     it "should return the form to the application registeration" do
