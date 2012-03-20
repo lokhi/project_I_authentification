@@ -6,7 +6,6 @@ require 'logger'
 require_relative 'database'
 require_relative 'lib/user'
 require_relative 'lib/application'
-require_relative 'lib/use'
 
 #enable :sessions  
 
@@ -24,6 +23,10 @@ helpers do
       session["current_user"]=settings.cookie_manager[cookie]
     end
     session["current_user"]
+  end
+  
+  def cUser
+    User.find_by_login(current_user)
   end
   
   def disconnect
@@ -120,7 +123,8 @@ end
 
 get '/:appli/session/new' do
   @a=Application.find_by_name(params["appli"])	
-  if current_user	
+  if current_user
+    cUser.use(@a.id)	
     redirect to Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
   else
     @or=params["origin"]

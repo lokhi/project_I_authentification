@@ -4,7 +4,7 @@ require_relative 'use'
 require_relative 'application'
 class User < ActiveRecord::Base
 
-  has_many :applications#, :dependent => :delete_all
+  has_many :applications, :dependent => :delete_all
   has_many :uses, :dependent => :delete_all
   
   validates :login, :presence => true

@@ -199,9 +199,12 @@ describe "authentification of an user call by an application" do
     it "should use the encryption of the login by the application" do
       Application.should_receive(:generate_link)
       get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
-      print last_response.body
     end
-    
+  
+    it "should save that the user use this application" do
+        @u.should_receive(:use)
+        get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+      end
     
     it "should redirect to the origin page off application" do
       get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
