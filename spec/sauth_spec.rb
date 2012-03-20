@@ -281,7 +281,7 @@ describe "the admin part" do
       u.stub(:destroy)
       User.should_receive(:find_by_login).with("toto")
       u.should_receive(:destroy)
-      get '/admin/users/toto/destroy'
+      get '/admin/user/toto/destroy'
     end 
     
  

@@ -155,7 +155,7 @@ get '/admin' do
 end
 
 
-get '/admin/users/:user/destroy' do
+get '/admin/user/:user/destroy' do
   u = User.find_by_login(params[:user])
   u.destroy
   redirect '/admin'
