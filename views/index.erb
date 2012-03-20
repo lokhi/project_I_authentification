@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>
-			
+			<%= @u.login %>
 		</title>
 		<link rel="stylesheet" href="/style.css" />
 	</head>
@@ -22,6 +22,7 @@
 				<h1>Hello <%= @u.login %></h1>
 				
 				<div class="index_appli">
+				<div class="disconnect"><a href="/session/destroy">disconnect</a></div>
 					<div class="appli_title">
 						<h2>Your Applications</h2>
 					</div>

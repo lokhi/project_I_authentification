@@ -28,6 +28,8 @@ helpers do
   
   def disconnect
     session["current_user"] = nil
+    cookie = request.cookies["sauthCookie"]
+    settings.cookie_manager[cookie]=nil
   end
 end
 
@@ -118,6 +120,10 @@ end
 
 get '/:appli/session/new' do	
   if current_user	
+    us=Use.new
+    us.user_id=User.find_by_login(current_user).id
+    us.application_id=Application.find_by_name(params["appli"]).id
+    us.save
     redirect to Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
   else
     @a=Application.find_by_name(params["appli"])
