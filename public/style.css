@@ -187,6 +187,12 @@ color:#000000;
 .box h1{
 border-bottom:1px dotted #cdcdcd;
 }
+.disconnect{
+float:right;
+}
+.disconnect a{
+color:#820500;
+}
 
 .appli_title{
 float:left;
