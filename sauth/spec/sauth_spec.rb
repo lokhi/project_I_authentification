@@ -378,7 +378,7 @@ describe "the admin part" do
       u.stub(:destroy)
       User.should_receive(:find_by_login).with("toto")
       u.should_receive(:destroy)
-      get '/admin/user/toto/destroy'
+      get '/admin/user/toto/destroy',{},"rack.session" => { "current_user" => "admin" }
     end 
     
  
@@ -389,7 +389,7 @@ describe "the admin part" do
       a.stub(:destroy)
       Application.should_receive(:find_by_name).with("appli1")
       a.should_receive(:destroy)
-      get '/admin/appli/appli1/destroy'
+      get '/admin/appli/appli1/destroy',{},"rack.session" => { "current_user" => "admin" }
     end 
   end
 end
