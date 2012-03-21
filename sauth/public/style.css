@@ -14,6 +14,23 @@ a.red{
 color:#820500;
 text-decoration:underline;
 }
+
+/* 404 */
+.box404{
+width:40%;
+margin-right:auto;
+margin-left:auto;
+border:1px solid #cdcdcd;
+border-radius: 10px;
+padding:20px;
+font-family:Arial;
+color:#000000;
+}
+.box404 h1{
+border-bottom:1px dotted #cdcdcd;
+}
+
+/* FIN 404 */
 /* LOGIN */
 .login{
 margin-left:auto;

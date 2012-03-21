@@ -7,7 +7,7 @@ require_relative 'database'
 require_relative 'lib/user'
 require_relative 'lib/application'
 
-#enable :sessions  
+enable :sessions  unless ENV['RACK_ENV']='test'
 
 set :cookie_manager , Hash.new
 set :logger , Logger.new('log/log.txt', 'daily')
@@ -189,4 +189,8 @@ get '/admin/appli/:appli/destroy' do
   a = Application.find_by_name(params[:appli])
   a.destroy
   redirect '/admin'
+end
+
+not_found do
+  erb :"404"
 end

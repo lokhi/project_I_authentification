@@ -3,6 +3,7 @@ require_relative '../sauth'
 def app
   Sinatra::Application
 end
+ENV['RACK_ENV']='test'
 
 describe "accessing to the homepage" do
   context "without being connected" do
@@ -398,6 +399,13 @@ describe "delete application on the user page" do
   it "should get the user corresponding to the current user" do
     User.should_receive(:find_by_login)
     get '/appli/app1/destroy',{},"rack.session" => { "current_user" => "toto" }
+  end
+end
+
+describe "page who not exists" do
+  it "should return the 404 page" do
+    get '/notexists'
+    last_response.body.should include ("<title>404</title>")
   end
 end
 
