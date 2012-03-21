@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Continue with this login?</title>
+		<link rel="stylesheet" href="/style.css" />
+	</head>
+	<body class="body_index">
+		<div class="header_index">
+			<div class="header_img">
+				<img src="/ruby.png" width="100px" height="100px" alt="logo" />
+			</div>
+			<div class="header_text">
+			Authentification service
+			</div>
+		</div>
+		<div class="effect">&nbsp;</div>
+		<div class="index_content">
+			<div class="box_appli_continue">
+				<div class="appli_intro">
+				   
+				  <strong><%= @a.name %></strong> use this service off authentification, if you want to use your login for this application click on the button. 
+				  <br />
+				  <br />
+				  <div class="continue"><a href="/appli1/session/continue?origin=<%= @or %>&secret=<%= @s %>">&nbsp;&nbsp;CONTINUE&nbsp;&nbsp;</a></div>
+				  <br />
+				  <br />
+				  Else fill the form at right to create a new account.(After the creation you will be automaticaly connected and redirected to <%= @a.name %> with the new account).
+
+				</div>
+				<div class="appli_login_form">
+					<p class="error">
+					  <% if @u %>
+				          <%= @u.errors.full_messages.join('<br />') %>
+				          <% end %>
+				        </p>
+					<form method="post" action="/<%= @a.name %>/user">
+						<label>Login : </label>
+						<input type="text" name="user[login]" value="<%= if @u; @u.login end %>"/>
+						<br /><br />
+						<label>Password : </label>
+						<input type="password" name="user[password]" />
+						<input type="hidden" name="origin" value="<%= @or %>" />
+						<input type="hidden" name="secret" value="<%= @s %>" />
+						<br />
+						<br />
+						<div>
+							<input type="submit" value="Create a new account" />
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>	

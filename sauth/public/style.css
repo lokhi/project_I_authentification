@@ -259,6 +259,30 @@ padding:20px;
 font-family:Arial;
 color:#000000;
 }
+.box_appli_continue{
+width:700px;
+height:250px;
+margin-top:10%;
+margin-right:auto;
+margin-left:auto;
+border:1px solid #cdcdcd;
+border-radius: 10px;
+padding:20px;
+font-family:Arial;
+color:#000000;
+}
+
+.box_appli_continue a{
+color:#FFFFFF;
+border-radius:10px;
+border:1px solid #cdcdcd;
+background:#820500;
+text-decoration:none;
+padding:3px;
+}
+.continue{
+text-align:center;
+}
 .appli_intro{
 width:300px;
 padding:20px;

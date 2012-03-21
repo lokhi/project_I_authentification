@@ -195,29 +195,126 @@ describe "authentification of an user call by an application" do
     @a.stub(:name){"appli1"}
     @a.stub(:id)
     Application.stub(:generate_link){"http://appli1/protected?login=totocrypted&secret=secret"}
-      
   end
+  
+  
   context "the user is connect to the sauth" do
   
-    it "should use the encryption of the login by the application" do
-      Application.should_receive(:generate_link)
-      get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
-    end
-  
-    it "should save that the user use this application" do
-        @u.should_receive(:use)
+    context "it's the first time than the user use this application" do
+      it "should ask at the user if he wants use his account" do
+        @u.stub(:use?){false}
+        get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        last_response.body.should include("<title>Continue with this login?</title>")
+      end
+      
+      
+      describe "the user decide to continue" do
+        it "should record that the user use this app" do
+          @u.should_receive(:use)
+          get '/appli1/session/continue',{"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        end
+        
+        it "should use the generate link off Application" do
+           Application.should_receive(:generate_link)
+           get '/appli1/session/continue' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        end
+        
+        it "should redirect the user to the app" do
+          get '/appli1/session/continue' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+          follow_redirect!
+          last_request.url.should include("http://appli1/protected")
+        end
+      end
+      
+      
+      describe "the user create a new account" do
+        before (:each) do
+          @user=double(User)
+          User.stub(:new){@user}
+          @user.stub(:login){"testrspec"}
+          @user.stub(:use)
+        end
+        
+        it "should create a new user" do
+          User.should_receive(:new)
+          post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+        end
+        
+        it "should save the user" do
+          @user.should_receive(:save)
+          post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+        end
+        
+        context "params are good" do
+          before(:each) do
+            @user.stub(:save){true}
+          end
+          
+          it "should record that the user use this app" do
+            @user.should_receive(:use)
+            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+          end
+          
+          it "should register the user into the current user_session" do
+            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            last_request.env["rack.session"]["current_user"].should == "testrspec"
+          end
+          
+          it "should generate the redirect link with Application" do
+            Application.should_receive(:generate_link)
+            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+          end
+          
+          it "should redirect the user to  the app" do
+            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            follow_redirect!
+            last_request.url.should include("http://appli1/protected")
+          end
+        end  
+        
+        context "params are not good" do
+          it "should reprint the form" do
+            @user.stub(:save){false}
+            erro=double("errors")
+            tab=double("tab")
+            @user.stub(:save){false}
+            @user.stub(:login){"testrspec"}
+            @user.stub(:errors){erro}
+            erro.stub(:full_messages){tab}
+            tab.stub(:join)
+            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            last_response.body.should include("<title>Continue with this login?</title>")
+          end
+        end
+      
+      end
+      
+      
+      
+      
+    end  
+    
+    context "it's not the first time than the user use this application" do
+      before(:each) do
+       @u.stub(:use?){true}
+      end
+      
+      it "should use the encryption of the login by the application" do
+        Application.should_receive(:generate_link)
         get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
       end
-    
-    it "should redirect to the origin page off application" do
-      get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
-      follow_redirect!
-      last_request.url.should include("http://appli1/protected")
+  
+      it "should redirect to the origin page off application" do
+        get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        follow_redirect!
+        last_request.url.should include("http://appli1/protected")
+      end
     end
     
   end
 
   context "the user is not connect to the sauth" do
+  
     it "should return the login form" do
     	get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"}
     	last_response.body.should include("<title>appli1 - login</title>")
@@ -248,7 +345,6 @@ describe "authentification of an user call by an application" do
         post '/appli1/session',@params
         follow_redirect!
         last_request.url.should == "http://appli1/protected?login=totocrypted&secret=secret"
-        
       end
  
     end

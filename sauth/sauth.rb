@@ -122,13 +122,16 @@ get '/appli/:appli/destroy' do
 end
 
 get '/:appli/session/new' do
-  @a=Application.find_by_name(params["appli"])	
+  @a=Application.find_by_name(params["appli"])
+  @or=params["origin"]
+  @s=params["secret"]	
   if current_user
-    cUser.use(@a.id)	
-    redirect to Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
+    if cUser.use?(@a.id)	
+      redirect to Application.generate_link(params["appli"],current_user,@or,@s)
+    else
+      erb :"appli_use_account"
+    end
   else
-    @or=params["origin"]
-    @s=params["secret"]
     erb :"appli_login"
   end
 end
@@ -145,6 +148,27 @@ post '/:appli/session' do
     erb :"appli_login"
   end
   
+end
+
+
+get '/:appli/session/continue' do
+  @a=Application.find_by_name(params["appli"])
+  cUser.use(@a.id)
+  redirect to Application.generate_link(params["appli"],current_user,params["origin"],params["secret"])
+end
+
+post '/:appli/user' do
+  @a=Application.find_by_name(params["appli"])
+  @u=User.new(params["user"])
+  @or=params["origin"]
+  @s=params["secret"]
+  if @u.save
+    session["current_user"]=@u.login
+    @u.use(@a.id)
+    redirect to Application.generate_link(params["appli"],@u.login,@or,@s)
+  else
+    erb :"appli_use_account"
+  end  
 end
 
 
