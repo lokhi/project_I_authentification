@@ -7,9 +7,8 @@ require_relative 'database'
 require_relative 'lib/user'
 require_relative 'lib/application'
 
-enable :sessions  unless ENV['RACK_ENV']='test'
+use Rack::Session::Cookie, :key => 'rack.session', :expire_after => 86400
 
-set :cookie_manager , Hash.new
 set :logger , Logger.new('log/log.txt', 'daily')
 
 def generate_cookie
@@ -18,10 +17,6 @@ end
 
 helpers do 
   def current_user
-    cookie = request.cookies["sauthCookie"]
-    if session["current_user"].nil? && !cookie.nil?
-      session["current_user"]=settings.cookie_manager[cookie]
-    end
     session["current_user"]
   end
   
@@ -31,8 +26,6 @@ helpers do
   
   def disconnect
     session["current_user"] = nil
-    cookie = request.cookies["sauthCookie"]
-    settings.cookie_manager[cookie]=nil
   end
 end
 
@@ -60,7 +53,6 @@ get '/' do
 end
 
 get '/session/new' do
-   
    erb :"login"
 end
 
@@ -69,9 +61,6 @@ post '/session' do
   if User.authenticate(params["user"])
     login=params["user"]["login"]
     session["current_user"]=login
-    cookie=generate_cookie
-    settings.cookie_manager[cookie]=login
-    response.set_cookie("sauthCookie",:value => cookie,:expires => Time.now+24*60*60) # 1 jour d'expiration
     if login == "admin"
      redirect "/admin"
     else

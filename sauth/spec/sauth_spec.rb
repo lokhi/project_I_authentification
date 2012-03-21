@@ -3,7 +3,6 @@ require_relative '../sauth'
 def app
   Sinatra::Application
 end
-ENV['RACK_ENV']='test'
 
 describe "accessing to the homepage" do
   context "without being connected" do
