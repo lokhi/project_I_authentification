@@ -136,10 +136,11 @@ describe "registration of an application by an user" do
     @u=double(User)
     User.stub(:find_by_login){@u}
     @u.stub(:id){1}
+    @session={"rack.session" => { "current_user" => "toto" }}
   end
     
     it "should return the form to the application registeration" do
-      get '/appli/new', {}, "rack.session" => { "current_user" => "toto" }
+      get '/appli/new', {},@session
       last_response.should be_ok
       last_response.body.should include("<title>Application register</title>")
     end
@@ -150,16 +151,16 @@ describe "registration of an application by an user" do
     end
     it "should create an application" do
       Application.should_receive(:new)
-      post '/appli', @params,"rack.session" => { "current_user" => "toto" }
+      post '/appli', @params,@session
     end
     
      it "should save the application" do
       @appli.should_receive(:save)
-      post '/appli', @params,"rack.session" => { "current_user" => "toto" }
+      post '/appli', @params,@session
     end
     
     it "should redirect the user to the home page" do
-      post '/appli', @params,"rack.session" => { "current_user" => "toto" }
+      post '/appli', @params,@session
       follow_redirect!
       last_request.path.should == "/"
     end
@@ -175,7 +176,7 @@ describe "registration of an application by an user" do
         erro.stub(:full_messages){tab}
         tab.stub(:join)
         @appli.stub(:save){false}
-        post '/appli', @params,"rack.session" => { "current_user" => "toto" }
+        post '/appli', @params,@session
         last_response.should be_ok
         last_response.body.should include("<title>Application register</title>")
       end
@@ -195,6 +196,8 @@ describe "authentification of an user call by an application" do
     @a.stub(:name){"appli1"}
     @a.stub(:id)
     Application.stub(:generate_link){"http://appli1/protected?login=totocrypted&secret=secret"}
+    @params={"origin"=>"/protected","secret"=>"foo"}
+    @session={"rack.session" => { "current_user" => "toto" }}
   end
   
   
@@ -203,7 +206,7 @@ describe "authentification of an user call by an application" do
     context "it's the first time than the user use this application" do
       it "should ask at the user if he wants use his account" do
         @u.stub(:use?){false}
-        get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        get '/appli1/session/new' ,@params ,@session
         last_response.body.should include("<title>Continue with this login?</title>")
       end
       
@@ -211,16 +214,16 @@ describe "authentification of an user call by an application" do
       describe "the user decide to continue" do
         it "should record that the user use this app" do
           @u.should_receive(:use)
-          get '/appli1/session/continue',{"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+          get '/appli1/session/continue',@params ,@session
         end
         
         it "should use the generate link off Application" do
            Application.should_receive(:generate_link)
-           get '/appli1/session/continue' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+           get '/appli1/session/continue' , @params ,@session
         end
         
         it "should redirect the user to the app" do
-          get '/appli1/session/continue' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+          get '/appli1/session/continue' , @params ,@session
           follow_redirect!
           last_request.url.should include("http://appli1/protected")
         end
@@ -233,16 +236,17 @@ describe "authentification of an user call by an application" do
           User.stub(:new){@user}
           @user.stub(:login){"testrspec"}
           @user.stub(:use)
+          @params={"user" => {"login"=>"testrspec", "password"=>"1234"}}
         end
         
         it "should create a new user" do
           User.should_receive(:new)
-          post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+          post '/appli1/user',@params
         end
         
         it "should save the user" do
           @user.should_receive(:save)
-          post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+          post '/appli1/user',@params
         end
         
         context "params are good" do
@@ -252,21 +256,21 @@ describe "authentification of an user call by an application" do
           
           it "should record that the user use this app" do
             @user.should_receive(:use)
-            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            post '/appli1/user',@params
           end
           
           it "should register the user into the current user_session" do
-            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            post '/appli1/user',@params
             last_request.env["rack.session"]["current_user"].should == "testrspec"
           end
           
           it "should generate the redirect link with Application" do
             Application.should_receive(:generate_link)
-            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            post '/appli1/user',@params
           end
           
           it "should redirect the user to  the app" do
-            post '/appli1/user',{"user" => {"login"=>"testrspec", "password"=>"1234"}}
+            post '/appli1/user',@params
             follow_redirect!
             last_request.url.should include("http://appli1/protected")
           end
@@ -297,15 +301,17 @@ describe "authentification of an user call by an application" do
     context "it's not the first time than the user use this application" do
       before(:each) do
        @u.stub(:use?){true}
+       @params={"origin"=>"/protected","secret"=>"foo"}
+       @session={"rack.session" => { "current_user" => "toto" }}
       end
       
       it "should use the encryption of the login by the application" do
         Application.should_receive(:generate_link)
-        get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        get '/appli1/session/new' , @params, @session
       end
   
       it "should redirect to the origin page off application" do
-        get '/appli1/session/new' , {"origin"=>"/protected","secret"=>"foo"},"rack.session" => { "current_user" => "toto" }
+        get '/appli1/session/new' ,  @params, @session
         follow_redirect!
         last_request.url.should include("http://appli1/protected")
       end
