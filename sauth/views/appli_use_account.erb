@@ -22,7 +22,7 @@
 				  <strong><%= @a.name %></strong> use this service off authentification, if you want to use your login for this application click on the button. 
 				  <br />
 				  <br />
-				  <div class="continue"><a href="/appli1/session/continue?origin=<%= @or %>&secret=<%= @s %>">&nbsp;&nbsp;CONTINUE&nbsp;&nbsp;</a></div>
+				  <div class="continue"><a href="/<%= @a.name %>/session/continue?origin=<%= @or %>&secret=<%= @s %>">&nbsp;&nbsp;CONTINUE&nbsp;&nbsp;</a></div>
 				  <br />
 				  <br />
 				  Else fill the form at right to create a new account.(After the creation you will be automaticaly connected and redirected to <%= @a.name %> with the new account).

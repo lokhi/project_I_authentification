@@ -37,9 +37,9 @@ before '/appli/new' do
   redirect "/session/new" if !current_user 
 end
 
-before '/:appli*' do
- redirect "/session/new" if (Application.find_by_name(params["appli"])==nil)
-end
+#before '/:appli*' do
+ #redirect "/session/new" if (Application.find_by_name(params["appli"])==nil)
+#end
 
 before '/admin*' do
   redirect "/session/new" if !(current_user=="admin")

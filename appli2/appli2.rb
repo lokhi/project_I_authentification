@@ -35,7 +35,7 @@ get '/protected' do
     redirect to"http://sauth:4567/appli2/session/new?origin=/protected&secret=#{secret}"
   else
     if session[params["secret"]] && (Time.now.to_i - session[params["secret"]] < 60)
-     key=File.read('private2.pem')
+     key=File.read('private.pem')
      @login=decypher(key,params["login"])
      erb :"appli2-protected"
     else
