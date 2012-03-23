@@ -1,0 +1,9 @@
+# Logfile created on 2012-03-23 17:26:43 +0100 by logger.rb/31641
+I, [2012-03-23T18:47:06.099561 #2261]  INFO -- : /session => louis
+I, [2012-03-23T18:47:12.476364 #2261]  INFO -- : /session => admin
+I, [2012-03-23T18:48:10.840989 #2348]  INFO -- : /session => louis
+I, [2012-03-23T18:48:17.189518 #2348]  INFO -- : /session => admin
+I, [2012-03-23T18:49:37.420654 #2448]  INFO -- : /session => admin
+I, [2012-03-23T19:10:01.987600 #3301]  INFO -- : /session => louis
+I, [2012-03-23T19:10:06.138948 #3301]  INFO -- : /session => louis
+I, [2012-03-23T19:10:38.675393 #3419]  INFO -- : /session => louis
