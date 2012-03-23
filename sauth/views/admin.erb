@@ -33,7 +33,7 @@
 				<% if @a && !@a.empty? %>
 				<ul>
 				  <% @a.each do |app| %>
-				  <li><%= app.name %> &nbsp;<a href="admin/appli/<%= app.name %>/destroy"><img src="delete.png" alt="delete the application" /></a></li>
+				  <li><%= app.name %> &nbsp;<a href="/appli/<%= app.name %>/destroy"><img src="delete.png" alt="delete the application" /></a></li>
 				  <% end %>
 				</ul>
 				<% else %>
@@ -41,10 +41,10 @@
 		 		<% end %>
 				<br /><br />
 				<h2>List of users</h2>
-				<% if @user && !@u.empty? %>
+				<% if @user && !@user.empty? %>
 				<ul>
 				  <% @user.each do |us| %>
-				  <li><%= us.login %> &nbsp;<a href="admin/user/<%= us.login %>/destroy"><img src="delete.png" alt="delete the application" /></a></li>
+				  <li><%= us.login %> &nbsp;<a href="/user/<%= us.login %>/destroy"><img src="delete.png" alt="delete the application" /></a></li>
 				  <% end %>
 				</ul>
 				<% else %>
