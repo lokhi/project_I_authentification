@@ -1,0 +1,110 @@
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################                                                                                                                
+                                                                                                                 
+   SSSSSSSSSSSSSSS              AAA           UUUUUUUU     UUUUUUUUTTTTTTTTTTTTTTTTTTTTTTTHHHHHHHHH     HHHHHHHHH
+ SS:::::::::::::::S            A:::A          U::::::U     U::::::UT:::::::::::::::::::::TH:::::::H     H:::::::H
+S:::::SSSSSS::::::S           A:::::A         U::::::U     U::::::UT:::::::::::::::::::::TH:::::::H     H:::::::H
+S:::::S     SSSSSSS          A:::::::A        UU:::::U     U:::::UUT:::::TT:::::::TT:::::THH::::::H     H::::::HH
+S:::::S                     A:::::::::A        U:::::U     U:::::U TTTTTT  T:::::T  TTTTTT  H:::::H     H:::::H  
+S:::::S                    A:::::A:::::A       U:::::D     D:::::U         T:::::T          H:::::H     H:::::H  
+ S::::SSSS                A:::::A A:::::A      U:::::D     D:::::U         T:::::T          H::::::HHHHH::::::H  
+  SS::::::SSSSS          A:::::A   A:::::A     U:::::D     D:::::U         T:::::T          H:::::::::::::::::H  
+    SSS::::::::SS       A:::::A     A:::::A    U:::::D     D:::::U         T:::::T          H:::::::::::::::::H  
+       SSSSSS::::S     A:::::AAAAAAAAA:::::A   U:::::D     D:::::U         T:::::T          H::::::HHHHH::::::H  
+            S:::::S   A:::::::::::::::::::::A  U:::::D     D:::::U         T:::::T          H:::::H     H:::::H  
+            S:::::S  A:::::AAAAAAAAAAAAA:::::A U::::::U   U::::::U         T:::::T          H:::::H     H:::::H  
+SSSSSSS     S:::::S A:::::A             A:::::AU:::::::UUU:::::::U       TT:::::::TT      HH::::::H     H::::::HH
+S::::::SSSSSS:::::SA:::::A               A:::::AUU:::::::::::::UU        T:::::::::T      H:::::::H     H:::::::H
+S:::::::::::::::SSA:::::A                 A:::::A UU:::::::::UU          T:::::::::T      H:::::::H     H:::::::H
+ SSSSSSSSSSSSSSS AAAAAAA                   AAAAAAA  UUUUUUUUU            TTTTTTTTTTT      HHHHHHHHH     HHHHHHHHH
+                                                                                                                 
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+#########################  Louis PERELLO - 2A Informatique et réseaux -  ENSEEIHT  ###############################
+##################################################################################################################
+##################################################################################################################
+##################################################################################################################
+
+
+
+Partie test 
+-------------------------------------------------------------------------------------------------------------------
+	1 - Sauth et lib de sauth
+		* cd sauth/
+		* rspec spec/*
+		
+	2 - appli1
+		* cd appli1/
+		* rspec appli1/appli1_spec.rb
+		
+		
+N.B :	a. L'application 2 n'a pas de test car elle est identique à l'application 1.
+	b. Le dossier lib/ de appli1 n'est pas test car déjà test dans sauth.
+	
+
+	
+Utilisation
+-------------------------------------------------------------------------------------------------------------------
+
+Pour commencer il faut modifier le fichier host pour ajouter les lignes suivantes:
+
+127.0.0.1	sauth // pour le service d'authentification
+127.0.0.1	appli // pour les deux applications clientes
+
+
+les acces sont donc:
+	- http://sauth:4567 pour le sauth
+	- http://appli:8910 pour l'appli1
+	- http://appli:8911 pour l'appli2
+	
+	
+
+La base de donnée contient:
+	- Deux comptes utilisateur:
+		* admin:123
+		* louis:123
+		
+	- Deux applications appartenant à l'utilisateurs louis:
+		* appli1
+		* appli2
+
+1. Le Service d'Authentification
+
+	La premiere fois que vous accèderez au sauth, vous serez redirigé vers la page de login.
+	Vous pouvez utilisé les comptes déjà présent dans la base ou bien créer un nouveau compte en cliquant sur le lien.
+
+	Une fois connecté vous êtes sur la page de l'utilisateur vous pouvez consulter les applications développées par celui ci,
+	ainsi que celles qu'il utilise.
+
+	Vous avez la possibilité d'ajouter une application en cliquant sur l'icone d'ajout.
+	Vous avez aussi la possibilité de supprimer une application que vous avez créé.
+
+	N.B: Lorsque vous vous connectez avec un compte le sauth vous attribue un cookie vous permettant de revenir sur l'application sans resaisir
+	votre mot de passe. (Le cookie dure 24h).
+
+	
+	Si vous vous connectez avec le comtpe admin vous avez accès à la partie administration du site (cet utilisateur est uniquement l'administrateur)
+
+
+2. Les applications clientes
+	
+	Elles sont composées de deux pages, '/' qui est public et '/protected' qui n'est accesible uniquement lorsque l'on est connecté.
+	Vous pouvez accéder à la partie protéger en cliquant sur le lien sur la page d'accueil.
+	
+	Il y a ensuite différents scénarii possible:
+		* Vous n'êtes pas connecté au sauth => vous êtes redirigé vers le formulaire de connection de l'application sur le sauth
+		* Vous êtes déja connecté au sauth et vous n'avez jamais utilisé l'application => Vous êtes redirigé vers une page vous demandant
+		  si vous souhaitez utilisé votre compte ou en créé un nouveau.
+		  
+		* Vous êtes déja connecté au sauth et vous avez déjà utilisé l'application => vous êtes redirigé vers le sauth qui vous redirige
+		  vers la zone protégé de l'application.
+	
+	
+
+
+N.B :  	- Le mécanisme d’authentification n’est pas sensible à des attaques de rejeu. 
+	- Vous trouverez les logs de connexion dans le repertoire log de sauth.
+
+
