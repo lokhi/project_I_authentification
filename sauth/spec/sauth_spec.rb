@@ -403,6 +403,8 @@ end
 
 describe "delete application on the user page" do
   it "should get the user corresponding to the current user" do
+    app=double(Application)
+    Application.stub(:find_by_name){app}
     User.should_receive(:find_by_login)
     get '/appli/app1/destroy',{},"rack.session" => { "current_user" => "toto" }
   end

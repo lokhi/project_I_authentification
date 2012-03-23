@@ -37,9 +37,9 @@ before '/appli/new' do
   redirect "/session/new" if !current_user 
 end
 
-#before '/:appli*' do
- #redirect "/session/new" if (Application.find_by_name(params["appli"])==nil)
-#end
+before '/appli/:appli/*' do
+ redirect "/session/new" if (Application.find_by_name(params["appli"])==nil)
+end
 
 before '/admin*' do
   redirect "/session/new" if !(current_user=="admin")
@@ -57,7 +57,7 @@ get '/session/new' do
 end
 
 post '/session' do
-  settings.logger.info("/session => "+params["user"]["login"]) unless ENV['RACK_ENV']='test'
+  settings.logger.info("/session => "+params["user"]["login"]) unless ENV['RACK_ENV']=='test'
   if User.authenticate(params["user"])
     login=params["user"]["login"]
     session["current_user"]=login
@@ -131,7 +131,7 @@ end
 
 post '/:appli/session' do
   @a=Application.find_by_name(params["appli"])
-  settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"]) unless ENV['RACK_ENV']='test'
+  settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"]) unless ENV['RACK_ENV']=='test'
   if @u=User.authenticate(params["user"])
     session["current_user"]=@u.login
     @u.use(@a.id)
