@@ -16,7 +16,7 @@ end
 
 set :port, 8910
 
-enable :sessions
+enable :sessions unless test?
 
 def generate_secret
   SecureRandom.urlsafe_base64

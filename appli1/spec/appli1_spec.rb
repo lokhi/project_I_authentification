@@ -1,9 +1,10 @@
+ENV['RACK_ENV']='test'
 require 'spec_helper'
 require_relative '../appli1'
 def app
   Sinatra::Application
 end
-ENV['RACK_ENV']='test'
+
 
 
 describe "the home page" do
