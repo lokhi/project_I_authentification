@@ -20,9 +20,6 @@ helpers do
     session["current_user"]
   end
   
-  def cUser
-    User.find_by_login(current_user)
-  end
   
   def disconnect
     session["current_user"] = nil
