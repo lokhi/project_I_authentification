@@ -20,6 +20,9 @@ helpers do
     session["current_user"]
   end
   
+  def cUser 
+    User.find_by_login(current_user)
+  end
   
   def disconnect
     session["current_user"] = nil
@@ -38,15 +41,17 @@ before '/appli/:appli/*' do
  redirect "/session/new" if (Application.find_by_name(params["appli"])==nil)
 end
 
-before '/admin*' do
-  redirect "/session/new" if !(current_user=="admin")
-end
-
 get '/' do
    @u=User.find_by_login(current_user)
    @Dapp=Application.where(:user_id => @u.id)
    @Uapp=Application.list_app_used_by(@u.id)
-   erb :"index"
+   if(@u.login=="admin")
+     @user=User.all
+     @a=Application.all
+     erb :"admin"
+   else
+    erb :"index"
+   end
 end
 
 get '/session/new' do
@@ -58,11 +63,7 @@ post '/session' do
   if User.authenticate(params["user"])
     login=params["user"]["login"]
     session["current_user"]=login
-    if login == "admin"
-     redirect "/admin"
-    else
-      redirect "/"
-    end
+    redirect "/"
   else
     @u=User.new(params["user"])
     erb :"login"
@@ -87,6 +88,15 @@ post '/user' do
  end
 end
 
+get '/user/:user/destroy' do
+  if current_user == 'admin'
+    u = User.find_by_login(params[:user])
+    u.destroy unless u.nil?
+    redirect '/'
+  end
+end
+
+
 
 get '/appli/new' do
   erb :"form_appli"
@@ -105,7 +115,7 @@ end
 get '/appli/:appli/destroy' do
    u=User.find_by_login(current_user)
    a=Application.find_by_name(params[:appli])
-   if a.user_id == u.id
+   if current_user =="admin" || a.user_id == u.id
    	a.destroy
    end
    redirect '/'
@@ -159,26 +169,6 @@ post '/:appli/user' do
   else
     erb :"appli_use_account"
   end  
-end
-
-
-get '/admin' do
-  @u=User.all
-  @a=Application.all
-  erb :"admin"
-end
-
-
-get '/admin/user/:user/destroy' do
-  u = User.find_by_login(params[:user])
-  u.destroy
-  redirect '/admin'
-end
-
-get '/admin/appli/:appli/destroy' do
-  a = Application.find_by_name(params[:appli])
-  a.destroy
-  redirect '/admin'
 end
 
 not_found do

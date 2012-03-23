@@ -373,7 +373,7 @@ describe "the admin part" do
   
   context "connect as admin" do
     it "should list all users of the sauth" do
-      get '/admin',{},"rack.session" => { "current_user" => "admin" }
+      get '/',{},"rack.session" => { "current_user" => "admin" }
       last_response.body.should include("List of users")
        last_response.body.should include("List of applications")
     end
@@ -384,7 +384,7 @@ describe "the admin part" do
       u.stub(:destroy)
       User.should_receive(:find_by_login).with("toto")
       u.should_receive(:destroy)
-      get '/admin/user/toto/destroy',{},"rack.session" => { "current_user" => "admin" }
+      get '/user/toto/destroy',{},"rack.session" => { "current_user" => "admin" }
     end 
     
  
@@ -395,7 +395,7 @@ describe "the admin part" do
       a.stub(:destroy)
       Application.should_receive(:find_by_name).with("appli1")
       a.should_receive(:destroy)
-      get '/admin/appli/appli1/destroy',{},"rack.session" => { "current_user" => "admin" }
+      get '/appli/appli1/destroy',{},"rack.session" => { "current_user" => "admin" }
     end 
   end
 end
