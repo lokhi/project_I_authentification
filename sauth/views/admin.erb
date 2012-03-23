@@ -41,9 +41,9 @@
 		 		<% end %>
 				<br /><br />
 				<h2>List of users</h2>
-				<% if @u && !@u.empty? %>
+				<% if @user && !@u.empty? %>
 				<ul>
-				  <% @u.each do |us| %>
+				  <% @user.each do |us| %>
 				  <li><%= us.login %> &nbsp;<a href="admin/user/<%= us.login %>/destroy"><img src="delete.png" alt="delete the application" /></a></li>
 				  <% end %>
 				</ul>
