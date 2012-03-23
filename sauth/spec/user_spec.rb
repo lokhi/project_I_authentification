@@ -122,4 +122,16 @@ describe "add utilisation of an application" do
     @u.use(1)
   end
 end
+
+describe "admin? methode" do
+  it "should return false if the login of the user is not 'admin'" do
+    subject.login="toto"
+    subject.admin?.should be_false
+  end
+  
+  it "should return true if the login is admin" do
+    subject.login="admin"
+    subject.admin?.should be_true
+  end 
+end
 end

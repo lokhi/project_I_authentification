@@ -111,7 +111,7 @@ describe "authentification with the login form" do
     it "should register the user into the current user_session" do
       post '/session', @params
       follow_redirect!
-      last_request.env["rack.session"]["current_user"].should == "toto"
+      last_request.env["rack.session"]["current_user"].should be_true
     end
   end
   
@@ -137,7 +137,7 @@ describe "registration of an application by an user" do
     @u=double(User)
     User.stub(:find_by_login){@u}
     @u.stub(:id){1}
-    @session={"rack.session" => { "current_user" => "toto" }}
+    @session={"rack.session" => { "current_user" => @u }}
   end
     
     it "should return the form to the application registeration" do
@@ -198,7 +198,7 @@ describe "authentification of an user call by an application" do
     @a.stub(:id)
     Application.stub(:generate_link){"http://appli1/protected?login=totocrypted&secret=secret"}
     @params={"origin"=>"/protected","secret"=>"foo"}
-    @session={"rack.session" => { "current_user" => "toto" }}
+    @session={"rack.session" => { "current_user" => @u }}
   end
   
   
@@ -303,7 +303,7 @@ describe "authentification of an user call by an application" do
       before(:each) do
        @u.stub(:use?){true}
        @params={"origin"=>"/protected","secret"=>"foo"}
-       @session={"rack.session" => { "current_user" => "toto" }}
+       @session={"rack.session" => { "current_user" => @u }}
       end
       
       it "should use the encryption of the login by the application" do
@@ -372,19 +372,23 @@ describe "the admin part" do
   end
   
   context "connect as admin" do
+    before(:each) do
+      @u=double(User)
+      @admin=double(User)
+      @admin.stub(:admin?){true}
+      User.stub(:find_by_login){@u}
+      @u.stub(:destroy)
+    end
     it "should list all users of the sauth" do
-      get '/',{},"rack.session" => { "current_user" => "admin" }
+      get '/',{},"rack.session" => { "current_user" => @admin }
       last_response.body.should include("List of users")
        last_response.body.should include("List of applications")
     end
     
     it "should delete an user" do
-      u=double("user")
-      User.stub(:find_by_login){u}
-      u.stub(:destroy)
       User.should_receive(:find_by_login).with("toto")
-      u.should_receive(:destroy)
-      get '/user/toto/destroy',{},"rack.session" => { "current_user" => "admin" }
+      @u.should_receive(:destroy)
+      get '/user/toto/destroy',{},"rack.session" => { "current_user" => @admin }
     end 
     
  
@@ -395,7 +399,7 @@ describe "the admin part" do
       a.stub(:destroy)
       Application.should_receive(:find_by_name).with("appli1")
       a.should_receive(:destroy)
-      get '/appli/appli1/destroy',{},"rack.session" => { "current_user" => "admin" }
+      get '/appli/appli1/destroy',{},"rack.session" => { "current_user" => @admin }
     end 
   end
 end
@@ -405,8 +409,11 @@ describe "delete application on the user page" do
   it "should get the user corresponding to the current user" do
     app=double(Application)
     Application.stub(:find_by_name){app}
-    User.should_receive(:find_by_login)
-    get '/appli/app1/destroy',{},"rack.session" => { "current_user" => "toto" }
+    u=double(User)
+    u.stub(:admin?){false}
+    app.stub(:user_id)
+    u.should_receive(:id)
+    get '/appli/app1/destroy',{},"rack.session" => { "current_user" => u }
   end
 end
 

@@ -42,10 +42,10 @@ before '/appli/:appli/*' do
 end
 
 get '/' do
-   @u=User.find_by_login(current_user)
+   @u=current_user
    @Dapp=Application.where(:user_id => @u.id)
    @Uapp=Application.list_app_used_by(@u.id)
-   if(@u.login=="admin")
+   if(current_user.admin?)
      @user=User.all
      @a=Application.all
      erb :"admin"
@@ -60,9 +60,7 @@ end
 
 post '/session' do
   settings.logger.info("/session => "+params["user"]["login"]) unless ENV['RACK_ENV']=='test'
-  if User.authenticate(params["user"])
-    login=params["user"]["login"]
-    session["current_user"]=login
+  if session["current_user"]=User.authenticate(params["user"])
     redirect "/"
   else
     @u=User.new(params["user"])
@@ -89,7 +87,7 @@ post '/user' do
 end
 
 get '/user/:user/destroy' do
-  if current_user == 'admin'
+  if current_user.admin?
     u = User.find_by_login(params[:user])
     u.destroy unless u.nil?
     redirect '/'
@@ -103,7 +101,7 @@ get '/appli/new' do
 end
 
 post '/appli' do
-  u=User.find_by_login(current_user)
+  u=current_user
   @a = Application.new(params["appli"].merge("user_id"=>u.id))
   if  @a.save
     redirect "/"
@@ -113,9 +111,9 @@ post '/appli' do
 end
 
 get '/appli/:appli/destroy' do
-   u=User.find_by_login(current_user)
+   u=current_user
    a=Application.find_by_name(params[:appli])
-   if current_user =="admin" || a.user_id == u.id
+   if current_user.admin? || a.user_id == u.id 
    	a.destroy
    end
    redirect '/'
@@ -126,8 +124,8 @@ get '/:appli/session/new' do
   @or=params["origin"]
   @s=params["secret"]	
   if current_user
-    if cUser.use?(@a.id)	
-      redirect to Application.generate_link(params["appli"],current_user,@or,@s)
+    if current_user.use?(@a.id)	
+      redirect to Application.generate_link(params["appli"],current_user.login,@or,@s)
     else
       erb :"appli_use_account"
     end
@@ -139,12 +137,11 @@ end
 post '/:appli/session' do
   @a=Application.find_by_name(params["appli"])
   settings.logger.info("/"+params["appli"]+"/session => "+params["user"]["login"]) unless ENV['RACK_ENV']=='test'
-  if @u=User.authenticate(params["user"])
-    session["current_user"]=@u.login
-    @u.use(@a.id)
-    redirect to Application.generate_link(params["appli"],@u.login,params["origin"],params["secret"])
+  if session["current_user"]=User.authenticate(params["user"])
+    current_user.use(@a.id)
+    redirect to Application.generate_link(params["appli"],current_user.login,params["origin"],params["secret"])
   else
-    
+    @u=User.new(params["user"])
     erb :"appli_login"
   end
   

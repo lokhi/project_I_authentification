@@ -44,4 +44,8 @@ class User < ActiveRecord::Base
     end
   end
   
+  def admin?
+    self.login=="admin"
+  end
+  
 end
